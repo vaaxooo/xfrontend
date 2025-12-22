@@ -29,7 +29,7 @@
 
       <p v-if="otpError" class="input-error">{{ otpError }}</p>
 
-      <div class="auth-footer">
+      <div v-if="hasEmailStep" class="auth-footer">
         <span class="center justify-content-center">
           {{ t('auth.otp_help') }}
           <button type="button" class="link link--primary" @click="handleResend">{{ t('auth.otp_resend') }}</button>
@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import AuthCard from '@/components/auth/AuthCard.vue'
 import { useAuthApi } from '@/composables/useAuthApi'
 import { useI18n } from '@/composables/useI18n'
@@ -66,6 +66,7 @@ const code = ref(Array(6).fill(''))
 const inputRefs = ref<HTMLInputElement[]>([])
 const challengeId = ref<string | null>(null)
 const otpError = ref('')
+const requiredSteps = ref<string[]>([])
 
 const setInputRef = (el: HTMLInputElement | null, index: number) => {
   if (el) {
@@ -89,6 +90,8 @@ const handleInput = (event: InputEvent, index: number) => {
   }
 }
 
+const hasEmailStep = computed(() => requiredSteps.value.includes('email_verification'))
+
 const handleSubmit = async () => {
   otpError.value = ''
 
@@ -106,24 +109,40 @@ const handleSubmit = async () => {
   try {
     const response = await verifyChallengeTotp({ challenge_id: challengeId.value, otp_code: codeValue })
 
-    if (response && typeof response === 'object' && 'access_token' in response && 'refresh_token' in response) {
-      setSession(response as AuthSession)
+    if (response && typeof response === 'object') {
+      if ('access_token' in response && 'refresh_token' in response) {
+        setSession(response as AuthSession)
 
-      const profile = await getMe()
-      setUserProfile(profile as any)
+        const profile = await getMe()
+        setUserProfile(profile as any)
+
+        openModal({
+          mode: 'alert',
+          title: t('auth.otp_title'),
+          description: t('auth.otp_confirmed'),
+          cancelLabel: t('modal.close'),
+        })
+
+        await router.push('/')
+        return
+      }
+
+      if ('status' in response && (response as any).status === 'challenge_required') {
+        const attemptsLeft = (response as any).attempts_left
+        otpError.value =
+          attemptsLeft !== undefined
+            ? t('alerts.totp_invalid_attempts', { attempts: attemptsLeft })
+            : t('alerts.totp_invalid')
+        challengeId.value = (response as any).challenge_id ?? challengeId.value
+        return
+      }
     }
 
-    openModal({
-      mode: 'alert',
-      title: t('auth.otp_title'),
-      description: t('auth.otp_confirmed'),
-      cancelLabel: t('modal.close'),
-    })
-
-    await router.push('/')
+    otpError.value = t('alerts.login_error_description')
   } catch (error: any) {
     const code = error?.data?.error?.code
     const message = error?.data?.error?.message
+    otpError.value = message || code || t('alerts.totp_invalid')
     push({
       title: t('alerts.login_error_title'),
       description: message || code || t('alerts.login_error_description'),
@@ -133,7 +152,7 @@ const handleSubmit = async () => {
 }
 
 const handleResend = async () => {
-  if (!challengeId.value) return
+  if (!challengeId.value || !hasEmailStep.value) return
 
   await resendChallengeEmail({ challenge_id: challengeId.value })
   push({ title: t('auth.otp_resend'), description: t('auth.otp_resend_description'), type: 'info' })
@@ -145,16 +164,19 @@ const ensureChallengeReady = async () => {
   const status = await challengeStatus({ challenge_id: challengeId.value })
 
   if (status && typeof status === 'object') {
-    const requiredSteps = (status as any).required_steps as string[] | undefined
+    const steps = (status as any).required_steps as string[] | undefined
     const completedSteps = (status as any).completed_steps as string[] | undefined
+    if (steps) {
+      requiredSteps.value = steps
+    }
 
-    if (requiredSteps?.includes('email_verification') && !completedSteps?.includes('email_verification')) {
+    if (steps?.includes('email_verification') && !completedSteps?.includes('email_verification')) {
       await router.push({
         path: '/auth/verify-email',
         query: {
           challenge_id: challengeId.value,
           masked_email: (status as any).masked_email || (route.query.masked_email as string),
-          required_steps: requiredSteps.join(','),
+          required_steps: steps.join(','),
         },
       })
       return
@@ -172,6 +194,10 @@ const ensureChallengeReady = async () => {
 onMounted(() => {
   inputRefs.value[0]?.focus()
   challengeId.value = (route.query.challenge_id as string) || null
+  const rawSteps = (route.query.required_steps as string) || ''
+  if (rawSteps) {
+    requiredSteps.value = rawSteps.split(',').filter(Boolean)
+  }
   ensureChallengeReady()
 })
 </script>

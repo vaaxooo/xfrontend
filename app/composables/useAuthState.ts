@@ -8,6 +8,7 @@ export type AuthProfile = {
   middle_name?: string
   display_name?: string
   avatar_url?: string
+  email?: string
 }
 
 export type AuthSession = AuthProfile & {
@@ -47,6 +48,7 @@ export const useAuthState = () => {
       middle_name: session.middle_name,
       display_name: session.display_name,
       avatar_url: session.avatar_url,
+      email: (session as any).email,
     }
   }
 

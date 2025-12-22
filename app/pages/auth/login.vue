@@ -122,14 +122,17 @@ const handleSubmit = async () => {
     const response = await login({ email: form.email, password: form.password })
 
     if (response && typeof response === 'object' && 'status' in response && response.status === 'challenge_required') {
-      push({
-        title: t('auth.email_verification_title'),
-        description: t('auth.email_verification_description'),
-        type: 'info',
-      })
-
       const requiredSteps = (response as any).required_steps as string[] | undefined
       const hasEmailStep = requiredSteps?.includes('email_verification')
+      const hasTotp = requiredSteps?.includes('totp')
+
+      push({
+        title: hasEmailStep ? t('auth.email_verification_title') : t('auth.otp_title'),
+        description: hasEmailStep
+          ? t('auth.email_verification_description')
+          : t('alerts.totp_required'),
+        type: 'info',
+      })
 
       const target = hasEmailStep ? '/auth/verify-email' : '/auth/otp'
 
@@ -137,8 +140,8 @@ const handleSubmit = async () => {
         path: target,
         query: {
           challenge_id: (response as any).challenge_id,
-          masked_email: (response as any).masked_email,
-          required_steps: (response as any).required_steps?.join(',') ?? '',
+          masked_email: hasEmailStep ? (response as any).masked_email : undefined,
+          required_steps: (response as any).required_steps?.join(',') ?? (hasTotp ? 'totp' : ''),
         },
       })
       return

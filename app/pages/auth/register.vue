@@ -132,7 +132,13 @@ const handleSubmit = async () => {
   try {
     const response = await register({ ...form })
 
-    if (response && typeof response === 'object' && 'access_token' in response && response.access_token) {
+    if (
+      response &&
+      typeof response === 'object' &&
+      'access_token' in response &&
+      typeof (response as any).access_token === 'string' &&
+      (response as any).access_token
+    ) {
       setSession(response as AuthSession)
       await fetchProfile()
 
