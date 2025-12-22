@@ -1,20 +1,45 @@
 import { useState } from '#app'
+import type { Awaitable } from '@/composables/useApi'
+import type { Component } from 'vue'
 
-type Awaitable<T> = T | Promise<T>
+export type ModalField = {
+  name: string
+  label?: string
+  placeholder?: string
+  type?: 'text' | 'email' | 'password'
+  value?: string
+  description?: string
+}
+
+type ModalMode = 'dialog' | 'alert'
 
 type ModalOptions = {
   title: string
   description?: string
   confirmLabel?: string
   cancelLabel?: string
-  onConfirm?: () => Awaitable<void>
+  onConfirm?: (values: Record<string, string>) => Awaitable<void>
+  fields?: ModalField[]
+  mode?: ModalMode
+  component?: Component
+  componentProps?: Record<string, unknown>
 }
 
-type ModalState = Required<Omit<ModalOptions, 'onConfirm'>> & {
+type ModalState = Omit<Required<Omit<ModalOptions, 'onConfirm'>>, 'component' | 'componentProps'> & {
+  component?: Component
+  componentProps?: Record<string, unknown>
   isOpen: boolean
   loading: boolean
-  onConfirm?: () => Awaitable<void>
+  onConfirm?: (values: Record<string, string>) => Awaitable<void>
+  values: Record<string, string>
+  id: number
 }
+
+const buildFieldValues = (fields: ModalField[] = []) =>
+  fields.reduce<Record<string, string>>((values, field) => {
+    values[field.name] = field.value ?? ''
+    return values
+  }, {})
 
 export const useModal = () => {
   const modal = useState<ModalState>('app-modal', () => ({
@@ -24,14 +49,23 @@ export const useModal = () => {
     description: '',
     confirmLabel: 'Подтвердить',
     cancelLabel: 'Отмена',
+    fields: [],
+    component: undefined,
+    componentProps: undefined,
+    values: {},
+    mode: 'dialog',
+    id: 0,
   }))
 
   const openModal = (options: ModalOptions) => {
     modal.value = {
       ...modal.value,
       ...options,
+      values: buildFieldValues(options.fields),
       isOpen: true,
       loading: false,
+      mode: options.mode ?? 'dialog',
+      id: modal.value.id + 1,
     }
   }
 
@@ -39,6 +73,10 @@ export const useModal = () => {
     modal.value.isOpen = false
     modal.value.loading = false
     modal.value.onConfirm = undefined
+    modal.value.fields = []
+    modal.value.values = {}
+    modal.value.component = undefined
+    modal.value.componentProps = undefined
   }
 
   const confirmModal = async () => {
@@ -47,13 +85,20 @@ export const useModal = () => {
       return
     }
 
+    const currentModalId = modal.value.id
     modal.value.loading = true
 
     try {
-      await modal.value.onConfirm()
+      await modal.value.onConfirm({ ...modal.value.values })
     } finally {
-      closeModal()
+      if (modal.value.id === currentModalId) {
+        closeModal()
+      }
     }
+  }
+
+  const updateField = (name: string, value: string) => {
+    modal.value.values[name] = value
   }
 
   return {
@@ -61,5 +106,6 @@ export const useModal = () => {
     openModal,
     closeModal,
     confirmModal,
+    updateField,
   }
 }
