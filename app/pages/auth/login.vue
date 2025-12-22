@@ -1,7 +1,7 @@
 <template>
   <AuthCard
-    :title="t('auth.loginTitle')"
-    :description="t('auth.loginDescription')"
+    :title="t('auth.login_title')"
+    :description="t('auth.login_description')"
     :socials="socials"
   >
     <form class="auth-form" @submit.prevent="handleSubmit">
@@ -9,43 +9,45 @@
         <input
           v-model="form.email"
           type="email"
-          :placeholder="t('auth.emailPlaceholder')"
+          :placeholder="t('auth.email_placeholder')"
           class="input"
-          required
+          :class="{ 'input--error': errors.email }"
         >
+        <p v-if="errors.email" class="input-error">{{ errors.email }}</p>
       </div>
 
       <div class="field">
         <input
           v-model="form.password"
           type="password"
-          :placeholder="t('auth.passwordPlaceholder')"
+          :placeholder="t('auth.password_placeholder')"
           class="input"
-          required
+          :class="{ 'input--error': errors.password }"
         >
+        <p v-if="errors.password" class="input-error">{{ errors.password }}</p>
       </div>
 
       <div class="row">
         <label class="checkbox">
           <input v-model="form.remember" type="checkbox" class="checkbox__input">
           <span class="checkbox__box" />
-          <span class="checkbox__label">{{ t('auth.rememberMe') }}</span>
+          <span class="checkbox__label">{{ t('auth.remember_me') }}</span>
         </label>
 
-        <NuxtLink to="/auth/recovery" class="link link--primary">{{ t('auth.forgotPassword') }}</NuxtLink>
+        <NuxtLink to="/auth/recovery" class="link link--primary">{{ t('auth.forgot_password') }}</NuxtLink>
       </div>
 
       <div class="auth-actions">
         <button type="submit" class="button button--auth w-full center button-md">
-          {{ t('auth.submitLogin') }}
+          {{ t('auth.submit_login') }}
           <img src="/assets/images/icons/arrow-right-white.svg" alt="arrow" class="w-24 h-24">
         </button>
       </div>
 
       <div class="auth-footer">
         <span class="center justify-content-center">
-          {{ t('auth.noAccount') }}
-          <NuxtLink to="/auth/register" class="link link--primary">{{ t('auth.toRegister') }}</NuxtLink>
+          {{ t('auth.no_account') }}
+          <NuxtLink to="/auth/register" class="link link--primary">{{ t('auth.to_register') }}</NuxtLink>
         </span>
       </div>
     </form>
@@ -67,16 +69,21 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const { login } = useAuthApi()
+const { login, getMe } = useAuthApi()
 const { openModal } = useModal()
 const { push } = useAlerts()
 const router = useRouter()
-const { setSession } = useAuthState()
+const { setSession, setUserProfile } = useAuthState()
 
 const form = reactive({
   email: '',
   password: '',
   remember: false,
+})
+
+const errors = reactive({
+  email: '',
+  password: '',
 })
 
 const socials = [
@@ -86,23 +93,55 @@ const socials = [
   { id: 'apple', label: 'Apple', icon: '/assets/images/icons/apple.svg' },
 ]
 
+const validate = () => {
+  errors.email = ''
+  errors.password = ''
+
+  if (!form.email) {
+    errors.email = t('alerts.validation_required')
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    errors.email = t('alerts.validation_email')
+  }
+
+  if (!form.password) {
+    errors.password = t('alerts.validation_required')
+  }
+
+  return !errors.email && !errors.password
+}
+
+const fetchProfile = async () => {
+  const profile = await getMe()
+  setUserProfile(profile as any)
+}
+
 const handleSubmit = async () => {
+  if (!validate()) return
+
   try {
     const response = await login({ email: form.email, password: form.password })
 
     if (response && typeof response === 'object' && 'status' in response && response.status === 'challenge_required') {
+      const requiredSteps = (response as any).required_steps as string[] | undefined
+      const hasEmailStep = requiredSteps?.includes('email_verification')
+      const hasTotp = requiredSteps?.includes('totp')
+
       push({
-        title: t('auth.otpTitle'),
-        description: t('auth.otpDescription'),
+        title: hasEmailStep ? t('auth.email_verification_title') : t('auth.otp_title'),
+        description: hasEmailStep
+          ? t('auth.email_verification_description')
+          : t('alerts.totp_required'),
         type: 'info',
       })
 
+      const target = hasEmailStep ? '/auth/verify-email' : '/auth/otp'
+
       await router.push({
-        path: '/auth/otp',
+        path: target,
         query: {
           challenge_id: (response as any).challenge_id,
-          attempts_left: (response as any).attempts_left,
-          masked_email: (response as any).masked_email,
+          masked_email: hasEmailStep ? (response as any).masked_email : undefined,
+          required_steps: (response as any).required_steps?.join(',') ?? (hasTotp ? 'totp' : ''),
         },
       })
       return
@@ -111,10 +150,12 @@ const handleSubmit = async () => {
     if (response && typeof response === 'object' && 'access_token' in response && 'refresh_token' in response) {
       setSession(response as AuthSession)
 
+      await fetchProfile()
+
       openModal({
         mode: 'alert',
-        title: t('auth.loginTitle'),
-        description: t('alerts.loginSuccess'),
+        title: t('auth.login_title'),
+        description: t('alerts.login_success'),
         cancelLabel: t('modal.close'),
       })
 
@@ -122,16 +163,28 @@ const handleSubmit = async () => {
       return
     }
 
-    push({ title: t('alerts.loginErrorTitle'), description: t('alerts.loginErrorDescription'), type: 'error' })
+    push({ title: t('alerts.login_error_title'), description: t('alerts.login_error_description'), type: 'error' })
   } catch (error: any) {
     const code = error?.data?.error?.code
     const message = error?.data?.error?.message
 
     push({
-      title: t('alerts.loginErrorTitle'),
-      description: message || code || t('alerts.loginErrorDescription'),
+      title: t('alerts.login_error_title'),
+      description: message || code || t('alerts.login_error_description'),
       type: 'error',
     })
   }
 }
 </script>
+
+<style scoped>
+.input--error {
+  border-color: #ff4d4f;
+}
+
+.input-error {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+}
+</style>

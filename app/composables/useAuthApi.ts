@@ -10,6 +10,7 @@ export const useAuthApi = () => {
       request('/auth/register', { body: payload }),
     refresh: (payload: { refresh_token: string }) =>
       request('/auth/refresh', { body: payload }),
+    getMe: () => request('/me', { method: 'GET' }),
     requestEmailConfirmation: (payload: { email: string }) =>
       request('/auth/confirm/request', { body: payload }),
     confirmEmail: (payload: { email: string; code: string }) =>
