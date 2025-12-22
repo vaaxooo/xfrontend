@@ -47,6 +47,6 @@ const props = withDefaults(
 
 const { t } = useI18n()
 
-const socialsLabel = computed(() => props.socialLabel ?? t('auth.socialLogin'))
+const socialsLabel = computed(() => props.socialLabel ?? t('auth.social_login'))
 const hasSocials = computed(() => props.socials?.length)
 </script>

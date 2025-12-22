@@ -1,20 +1,20 @@
 <template>
   <div class="twofa">
-    <p class="twofa__subtitle">{{ t('security.twoFactorDescription') }}</p>
+    <p class="twofa__subtitle">{{ t('security.two_factor_description') }}</p>
 
     <div class="twofa__grid">
       <div class="twofa__qr" v-if="qr || otpauthUri">
         <img :src="qr || buildQr(otpauthUri)" alt="QR code" class="twofa__qr-image">
-        <span class="twofa__hint">{{ t('security.scanQr') }}</span>
+        <span class="twofa__hint">{{ t('security.scan_qr') }}</span>
       </div>
 
       <div class="twofa__details">
         <div class="twofa__item">
-          <span class="twofa__label">{{ t('security.secretKey') }}</span>
+          <span class="twofa__label">{{ t('security.secret_key') }}</span>
           <code class="twofa__code">{{ secret || '•••• •••• ••••' }}</code>
         </div>
         <div class="twofa__item" v-if="otpauthUri">
-          <span class="twofa__label">{{ t('security.manualUri') }}</span>
+          <span class="twofa__label">{{ t('security.manual_uri') }}</span>
           <code class="twofa__code twofa__code--wrap">{{ otpauthUri }}</code>
         </div>
       </div>
