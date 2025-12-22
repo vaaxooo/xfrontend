@@ -16,7 +16,7 @@
           maxlength="1"
           class="input otp-input"
           @input="(event) => handleInput(event as InputEvent, index)"
-          @keydown.backspace="() => focusPrevious(index)"
+          @keydown.backspace.prevent="(event) => handleBackspace(event as KeyboardEvent, index)"
         >
       </div>
 
@@ -74,12 +74,6 @@ const setInputRef = (el: HTMLInputElement | null, index: number) => {
   }
 }
 
-const focusPrevious = (index: number) => {
-  if (index > 0) {
-    inputRefs.value[index - 1]?.focus()
-  }
-}
-
 const handleInput = (event: InputEvent, index: number) => {
   const target = event.target as HTMLInputElement
   const value = target.value.slice(-1)
@@ -87,6 +81,17 @@ const handleInput = (event: InputEvent, index: number) => {
 
   if (value && index < inputRefs.value.length - 1) {
     inputRefs.value[index + 1]?.focus()
+  }
+}
+
+const handleBackspace = (event: KeyboardEvent, index: number) => {
+  if (code.value[index]) {
+    code.value[index] = ''
+    return
+  }
+
+  if (index > 0) {
+    inputRefs.value[index - 1]?.focus()
   }
 }
 

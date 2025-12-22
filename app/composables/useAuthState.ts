@@ -33,6 +33,19 @@ export const useAuthState = () => {
   const refreshToken = useState<string | null>('refresh_token', () => readToken('refresh_token'))
   const user = useState<AuthProfile | null>('auth-user', () => null)
 
+  if (process.client) {
+    const storedAccess = readToken('access_token')
+    const storedRefresh = readToken('refresh_token')
+
+    if (storedAccess && !accessToken.value) {
+      accessToken.value = storedAccess
+    }
+
+    if (storedRefresh && !refreshToken.value) {
+      refreshToken.value = storedRefresh
+    }
+  }
+
   const isAuthenticated = computed(() => Boolean(accessToken.value))
 
   const setSession = (session: AuthSession) => {

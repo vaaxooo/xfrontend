@@ -170,7 +170,7 @@ const handleSubmit = async () => {
 
     push({
       title: t('alerts.login_error_title'),
-      description:  t('alerts.login_error_description') || message || code,
+      description: message || code || t('alerts.login_error_description'),
       type: 'error',
     })
   }
