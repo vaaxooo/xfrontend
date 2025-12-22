@@ -33,8 +33,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits, defineProps } from 'vue'
-
 defineProps({
   sessionId: {
     type: String,
