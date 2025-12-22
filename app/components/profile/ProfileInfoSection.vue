@@ -1,5 +1,5 @@
 <template>
-  <AppSection :title="t('profile.personalData')">
+  <AppSection :title="t('profile.personal_data')">
     <div class="block">
       <div class="table-section">
         <EditableField

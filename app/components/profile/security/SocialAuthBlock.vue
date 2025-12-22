@@ -7,11 +7,11 @@
 
       <div class="block-content">
         <div class="block-content__title">
-          {{ t('security.socialTitle') }}
+          {{ t('security.social_title') }}
         </div>
 
         <div class="block-content__description">
-          {{ t('security.socialDescription') }}
+          {{ t('security.social_description') }}
         </div>
       </div>
     </div>
