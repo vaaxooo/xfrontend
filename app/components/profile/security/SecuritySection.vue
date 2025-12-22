@@ -1,5 +1,5 @@
 <template>
-  <AppSection :title="t('security.twoFactor')">
+  <AppSection :title="t('security.two_factor')">
     <div class="block row p-16">
       <div class="row">
         <div class="icon">
@@ -8,11 +8,11 @@
 
         <div class="block-content">
           <div class="block-content__title">
-            {{ t('security.twoFactor') }}
+            {{ t('security.two_factor') }}
           </div>
 
           <div class="block-content__description">
-            {{ t('security.twoFactorDescription') }}
+            {{ t('security.two_factor_description') }}
           </div>
         </div>
       </div>
@@ -47,23 +47,23 @@ const handleEnableTwoFactor = async () => {
   const enrollment = await startTotpSetup()
 
   openModal({
-    title: t('security.twoFactor'),
-    description: t('security.twoFactorSetupIntro'),
+    title: t('security.two_factor'),
+    description: t('security.two_factor_setup_intro'),
     confirmLabel: t('security.enable'),
     cancelLabel: t('modal.cancel'),
     onConfirm: async (values) => {
       await confirmTotpSetup({ code: values.code ?? '' })
 
       push({
-        title: t('alerts.totpEnabledTitle'),
-        description: t('alerts.totpEnabledBody'),
+        title: t('alerts.totp_enabled_title'),
+        description: t('alerts.totp_enabled_body'),
         type: 'success',
       })
     },
     fields: [
       {
         name: 'code',
-        label: t('security.totpPlaceholder'),
+        label: t('security.totp_placeholder'),
         placeholder: '123456',
         type: 'text',
       },

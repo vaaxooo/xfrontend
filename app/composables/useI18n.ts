@@ -22,14 +22,24 @@ const getValue = (obj: TranslationValue, path: string[]): string => {
   }, obj) as string
 }
 
+const interpolate = (template: string, params?: Record<string, string | number>) => {
+  if (!params) return template
+
+  return Object.entries(params).reduce((result, [key, value]) => {
+    return result.replaceAll(`{${key}}`, String(value))
+  }, template)
+}
+
 export const useI18n = () => {
   const locale = useState<LocaleKey>('app-locale', () => 'ru')
 
-  const t = (key: string) => {
+  const t = (key: string, params?: Record<string, string | number>) => {
     const target = messages[locale.value]
     const value = getValue(target, key.split('.'))
 
-    return value || key
+    if (!value) return key
+
+    return interpolate(value, params)
   }
 
   const switchLocale = (next: LocaleKey) => {
