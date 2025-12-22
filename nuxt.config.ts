@@ -7,15 +7,16 @@ export default defineNuxtConfig({
 	devtools: { enabled: false },
 
 
-	experimental: {
-		payloadExtraction: true,
-		renderJsonPayloads: true
-	},
+        experimental: {
+                payloadExtraction: true,
+                renderJsonPayloads: true
+        },
 
-	runtimeConfig: {
-		public: {
-		}
-	},
+        runtimeConfig: {
+                public: {
+                        apiBase: 'https://localhost:8081/api/v1'
+                }
+        },
 
 	app: {
 		head: {

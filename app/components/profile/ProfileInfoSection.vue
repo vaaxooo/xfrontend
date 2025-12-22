@@ -1,49 +1,49 @@
 <template>
-  <AppSection title="Персональные данные">
+  <AppSection :title="t('profile.personalData')">
     <div class="block">
       <div class="table-section">
-        <a
-          v-for="field in profileFields"
+        <EditableField
+          v-for="field in fields"
           :key="field.key"
-          href="#"
-          class="table-section__row"
-          @click.prevent="handleEdit(field)"
-        >
-          <div class="table-section__label">{{ field.label }}</div>
-          <div class="table-section__grouped-value">
-            <div class="table-section__value">{{ field.value }}</div>
-            <img src="/assets/images/icons/arrow-right.svg" class="table-section__icon">
-          </div>
-        </a>
+          :label="field.label"
+          :model-value="field.value"
+          @save="(value) => handleSave(field.key, value)"
+        />
       </div>
     </div>
   </AppSection>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import EditableField from '@/components/profile/EditableField.vue'
 import AppSection from '@/components/common/AppSection.vue'
-import { useModal } from '@/composables/useModal'
+import { useI18n } from '@/composables/useI18n'
 import { useProfileApi } from '@/composables/useProfileApi'
 
-const profileFields = ref([
-  { key: 'firstName', label: 'Имя', value: 'Никита' },
-  { key: 'middleName', label: 'Отчество', value: 'Александрович' },
-  { key: 'lastName', label: 'Фамилия', value: 'Печенкин' },
-  { key: 'email', label: 'E-mail', value: 'vaaxooo@gmail.com' },
+const rawFields = ref([
+  { key: 'firstName', value: 'Никита' },
+  { key: 'middleName', value: 'Александрович' },
+  { key: 'lastName', value: 'Печенкин' },
+  { key: 'email', value: 'vaaxooo@gmail.com' },
 ])
 
-const { openModal } = useModal()
+const { t } = useI18n()
 const { updateProfileField } = useProfileApi()
 
-const handleEdit = (field: { key: string; label: string; value: string }) => {
-  openModal({
-    title: `Изменить «${field.label}»`,
-    description: `Текущее значение: <strong>${field.value}</strong>`,
-    confirmLabel: 'Сохранить',
-    onConfirm: async () => {
-      await updateProfileField({ field: field.key, value: field.value })
-    },
-  })
+const fields = computed(() =>
+  rawFields.value.map((field) => ({
+    ...field,
+    label: t(`profile.${field.key}`),
+  })),
+)
+
+const handleSave = async (key: string, value: string) => {
+  await updateProfileField({ [key]: value })
+  const target = rawFields.value.find((field) => field.key === key)
+
+  if (target) {
+    target.value = value
+  }
 }
 </script>
