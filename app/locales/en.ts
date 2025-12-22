@@ -73,6 +73,8 @@ export default {
     recoverySentBody:
       'We sent a unique temporary link to your email address to change the password of your account.',
     loginSuccess: 'You are signed in and can continue working.',
+    loginErrorTitle: 'Sign-in failed',
+    loginErrorDescription: 'Check your credentials and try again.',
     passwordReset: 'Password updated. You can now sign in with the new credentials.',
     totpEnabledTitle: '2FA enabled',
     totpEnabledBody: 'We saved your TOTP settings. Use codes to confirm sign-in.',

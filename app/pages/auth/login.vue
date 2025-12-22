@@ -60,6 +60,7 @@ import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
 import { useAlerts } from '@/composables/useAlerts'
 import { useRouter } from 'vue-router'
+import { useAuthState, type AuthSession } from '@/composables/useAuthState'
 
 definePageMeta({
   layout: 'auth',
@@ -70,6 +71,7 @@ const { login } = useAuthApi()
 const { openModal } = useModal()
 const { push } = useAlerts()
 const router = useRouter()
+const { setSession } = useAuthState()
 
 const form = reactive({
   email: '',
@@ -85,24 +87,51 @@ const socials = [
 ]
 
 const handleSubmit = async () => {
-  const response = await login({ ...form })
+  try {
+    const response = await login({ email: form.email, password: form.password })
 
-  if (response && typeof response === 'object' && 'status' in response && response.status === 'challenge_required') {
+    if (response && typeof response === 'object' && 'status' in response && response.status === 'challenge_required') {
+      push({
+        title: t('auth.otpTitle'),
+        description: t('auth.otpDescription'),
+        type: 'info',
+      })
+
+      await router.push({
+        path: '/auth/otp',
+        query: {
+          challenge_id: (response as any).challenge_id,
+          attempts_left: (response as any).attempts_left,
+          masked_email: (response as any).masked_email,
+        },
+      })
+      return
+    }
+
+    if (response && typeof response === 'object' && 'access_token' in response && 'refresh_token' in response) {
+      setSession(response as AuthSession)
+
+      openModal({
+        mode: 'alert',
+        title: t('auth.loginTitle'),
+        description: t('alerts.loginSuccess'),
+        cancelLabel: t('modal.close'),
+      })
+
+      await router.push('/')
+      return
+    }
+
+    push({ title: t('alerts.loginErrorTitle'), description: t('alerts.loginErrorDescription'), type: 'error' })
+  } catch (error: any) {
+    const code = error?.data?.error?.code
+    const message = error?.data?.error?.message
+
     push({
-      title: t('auth.otpTitle'),
-      description: t('auth.otpDescription'),
-      type: 'info',
+      title: t('alerts.loginErrorTitle'),
+      description: message || code || t('alerts.loginErrorDescription'),
+      type: 'error',
     })
-
-    await router.push({ path: '/auth/otp', query: { challenge_id: (response as any).challenge_id } })
-    return
   }
-
-  openModal({
-    mode: 'alert',
-    title: t('auth.loginTitle'),
-    description: t('alerts.loginSuccess'),
-    cancelLabel: t('modal.close'),
-  })
 }
 </script>

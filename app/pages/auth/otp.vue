@@ -45,6 +45,8 @@ import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
 import { useRoute } from 'vue-router'
 import { useAlerts } from '@/composables/useAlerts'
+import { useAuthState, type AuthSession } from '@/composables/useAuthState'
+import { useRouter } from 'vue-router'
 
 definePageMeta({
   layout: 'auth',
@@ -55,6 +57,8 @@ const { verifyChallengeTotp, resendChallengeEmail } = useAuthApi()
 const { openModal } = useModal()
 const { push } = useAlerts()
 const route = useRoute()
+const router = useRouter()
+const { setSession } = useAuthState()
 
 const code = ref(Array(6).fill(''))
 const inputRefs = ref<HTMLInputElement[]>([])
@@ -88,13 +92,30 @@ const handleSubmit = async () => {
     return
   }
 
-  await verifyChallengeTotp({ challenge_id: challengeId.value, otp_code: code.value.join('') })
-  openModal({
-    mode: 'alert',
-    title: t('auth.otpTitle'),
-    description: t('auth.otpConfirmed'),
-    cancelLabel: t('modal.close'),
-  })
+  try {
+    const response = await verifyChallengeTotp({ challenge_id: challengeId.value, otp_code: code.value.join('') })
+
+    if (response && typeof response === 'object' && 'access_token' in response && 'refresh_token' in response) {
+      setSession(response as AuthSession)
+    }
+
+    openModal({
+      mode: 'alert',
+      title: t('auth.otpTitle'),
+      description: t('auth.otpConfirmed'),
+      cancelLabel: t('modal.close'),
+    })
+
+    await router.push('/')
+  } catch (error: any) {
+    const code = error?.data?.error?.code
+    const message = error?.data?.error?.message
+    push({
+      title: t('alerts.loginErrorTitle'),
+      description: message || code || t('alerts.loginErrorDescription'),
+      type: 'error',
+    })
+  }
 }
 
 const handleResend = async () => {
