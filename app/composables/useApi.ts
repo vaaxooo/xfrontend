@@ -1,4 +1,5 @@
-import { useRuntimeConfig } from '#app'
+import { navigateTo, useRuntimeConfig } from '#app'
+import { useRoute } from '#imports'
 import { useAuthState } from '@/composables/useAuthState'
 
 export type Awaitable<T> = T | Promise<T>
@@ -11,7 +12,8 @@ export type ApiRequestOptions = {
 export const useApi = () => {
   const config = useRuntimeConfig()
   const apiBase = config.public?.apiBase || 'https://localhost:8081/api/v1'
-  const { accessToken } = useAuthState()
+  const { accessToken, clearSession } = useAuthState()
+  const route = useRoute()
 
   const request = async <T>(path: string, options: ApiRequestOptions = {}) => {
     const headers = {
@@ -23,6 +25,17 @@ export const useApi = () => {
       method: options.method ?? 'POST',
       ...options,
       headers,
+      onResponseError: async ({ response }) => {
+        if (response.status === 401 || response.status === 403) {
+          clearSession()
+
+          if (!route.path.startsWith('/auth')) {
+            await navigateTo('/auth/login', { replace: true })
+          }
+        }
+
+        throw response._data ?? new Error('Request failed')
+      },
     })
   }
 
