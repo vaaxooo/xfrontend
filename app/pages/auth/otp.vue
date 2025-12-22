@@ -147,10 +147,10 @@ const handleSubmit = async () => {
   } catch (error: any) {
     const code = error?.data?.error?.code
     const message = error?.data?.error?.message
-    otpError.value = message || code || t('alerts.totp_invalid')
+    otpError.value = t('alerts.totp_invalid') || message || code || ''
     push({
       title: t('alerts.login_error_title'),
-      description: message || code || t('alerts.login_error_description'),
+      description: t('alerts.login_error_description') || message || code,
       type: 'error',
     })
   }

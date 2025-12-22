@@ -194,7 +194,7 @@ const handleSubmit = async () => {
     const message = error?.data?.error?.message
     push({
       title: t('alerts.error_title'),
-      description: message || code || t('alerts.login_error_description'),
+      description: t('alerts.login_error_description') || message || code,
       type: 'error',
     })
   }

@@ -4,6 +4,8 @@ import { useAuthState } from '@/composables/useAuthState'
 const isAuthRoute = (path: string) => path.startsWith('/auth')
 
 export default defineNuxtRouteMiddleware((to) => {
+  if (process.server) return
+
   const { isAuthenticated } = useAuthState()
 
   if (!isAuthenticated.value && !isAuthRoute(to.path)) {
