@@ -1,7 +1,7 @@
 <template>
   <div class="section">
     <div class="section-title">
-      {{ t('security.loginSettings') }}
+      {{ t('security.login_settings') }}
     </div>
 
     <div class="block row p-16">
@@ -12,11 +12,11 @@
 
         <div class="block-content">
           <div class="block-content__title">
-            {{ t('security.passwordTitle') }}
+            {{ t('security.password_title') }}
           </div>
 
           <div class="block-content__description">
-            {{ t('security.passwordDescription') }}
+            {{ t('security.password_description') }}
           </div>
         </div>
       </div>
@@ -27,7 +27,7 @@
           class="button button--secondary"
           @click="handlePasswordChange"
         >
-          {{ t('security.changePassword') }}
+          {{ t('security.change_password') }}
         </button>
       </div>
     </div>
@@ -48,9 +48,9 @@ const { requestPasswordReset } = useAuthApi()
 
 const handlePasswordChange = () => {
   openModal({
-    title: t('security.changePassword'),
-    description: t('security.changePasswordDescription'),
-    confirmLabel: t('security.changePasswordSubmit'),
+    title: t('security.change_password'),
+    description: t('security.change_password_description'),
+    confirmLabel: t('security.change_password_submit'),
     cancelLabel: t('modal.cancel'),
     fields: [
       {
@@ -66,19 +66,19 @@ const handlePasswordChange = () => {
       } else {
         openModal({
           mode: 'alert',
-          title: t('alerts.errorTitle'),
-          description: t('alerts.invalidEmail'),
+          title: t('alerts.error_title'),
+          description: t('alerts.invalid_email'),
           cancelLabel: t('modal.close'),
-        })
-      }
-
-      openModal({
-        mode: 'alert',
-        title: t('alerts.recoverySentTitle'),
-        description: t('alerts.recoverySentBody'),
-        cancelLabel: t('modal.close'),
       })
-    },
-  })
+    }
+
+    openModal({
+      mode: 'alert',
+      title: t('alerts.recovery_sent_title'),
+      description: t('alerts.recovery_sent_body'),
+      cancelLabel: t('modal.close'),
+    })
+  },
+})
 }
 </script>

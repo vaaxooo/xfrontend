@@ -1,5 +1,5 @@
 <template>
-  <AppSection :title="t('profile.personalData')">
+  <AppSection :title="t('profile.personal_data')">
     <div class="block">
       <div class="table-section">
         <EditableField
@@ -15,24 +15,44 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import EditableField from '@/components/profile/EditableField.vue'
 import AppSection from '@/components/common/AppSection.vue'
 import { useI18n } from '@/composables/useI18n'
 import { useProfileApi } from '@/composables/useProfileApi'
+import { useAuthState } from '@/composables/useAuthState'
 
-const rawFields = ref([
-  { key: 'first_name', value: 'Никита' },
-  { key: 'middle_name', value: 'Александрович' },
-  { key: 'last_name', value: 'Печенкин' },
-  { key: 'email', value: 'vaaxooo@gmail.com' },
-])
+const editableProfile = ref({
+  first_name: '',
+  middle_name: '',
+  last_name: '',
+  email: '',
+})
 
 const { t } = useI18n()
 const { updateProfileField } = useProfileApi()
+const { user, setUserProfile } = useAuthState()
+
+watch(
+  user,
+  (value) => {
+    editableProfile.value = {
+      first_name: value?.first_name ?? '',
+      middle_name: value?.middle_name ?? '',
+      last_name: value?.last_name ?? '',
+      email: (value as any)?.email ?? '',
+    }
+  },
+  { immediate: true },
+)
 
 const fields = computed(() =>
-  rawFields.value.map((field) => ({
+  [
+    { key: 'first_name', value: editableProfile.value.first_name },
+    { key: 'middle_name', value: editableProfile.value.middle_name },
+    { key: 'last_name', value: editableProfile.value.last_name },
+    { key: 'email', value: editableProfile.value.email },
+  ].map((field) => ({
     ...field,
     label: t(`profile.${field.key}`),
   })),
@@ -40,10 +60,13 @@ const fields = computed(() =>
 
 const handleSave = async (key: string, value: string) => {
   await updateProfileField({ [key]: value })
-  const target = rawFields.value.find((field) => field.key === key)
+  editableProfile.value = {
+    ...editableProfile.value,
+    [key]: value,
+  }
 
-  if (target) {
-    target.value = value
+  if (user.value) {
+    setUserProfile({ ...user.value, [key]: value })
   }
 }
 </script>
