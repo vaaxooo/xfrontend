@@ -10,6 +10,13 @@
 
           <div v-if="modal.description" class="modal__body" v-html="modal.description" />
 
+          <component
+            :is="modal.component"
+            v-if="modal.component"
+            v-bind="modal.componentProps"
+            class="modal__custom"
+          />
+
           <div v-if="modal.fields.length" class="modal__form">
             <label v-for="field in modal.fields" :key="field.name" class="modal__field">
               <span v-if="field.label" class="modal__label">{{ field.label }}</span>
@@ -64,6 +71,10 @@ const { t } = useI18n()
 .modal__form {
   display: grid;
   gap: var(--s-3);
+}
+
+.modal__custom {
+  margin: var(--s-4) 0;
 }
 
 .modal__field {

@@ -40,11 +40,11 @@
 import SocialAuthBlock from '@/components/profile/security/SocialAuthBlock.vue'
 import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
-import { useProfileApi } from '@/composables/useProfileApi'
+import { useAuthApi } from '@/composables/useAuthApi'
 
 const { t } = useI18n()
 const { openModal } = useModal()
-const { changePassword } = useProfileApi()
+const { requestPasswordReset } = useAuthApi()
 
 const handlePasswordChange = () => {
   openModal({
@@ -61,7 +61,7 @@ const handlePasswordChange = () => {
       },
     ],
     onConfirm: async (values) => {
-      await changePassword({ strategy: 'email-link', email: values.email })
+      await requestPasswordReset({ email: values.email })
 
       openModal({
         mode: 'alert',

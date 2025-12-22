@@ -39,7 +39,7 @@ const fields = computed(() =>
 )
 
 const handleSave = async (key: string, value: string) => {
-  await updateProfileField({ field: key, value })
+  await updateProfileField({ [key]: value })
   const target = rawFields.value.find((field) => field.key === key)
 
   if (target) {

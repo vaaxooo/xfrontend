@@ -58,6 +58,8 @@ import AuthCard from '@/components/auth/AuthCard.vue'
 import { useAuthApi } from '@/composables/useAuthApi'
 import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
+import { useAlerts } from '@/composables/useAlerts'
+import { useRouter } from 'vue-router'
 
 definePageMeta({
   layout: 'auth',
@@ -66,6 +68,8 @@ definePageMeta({
 const { t } = useI18n()
 const { login } = useAuthApi()
 const { openModal } = useModal()
+const { push } = useAlerts()
+const router = useRouter()
 
 const form = reactive({
   email: '',
@@ -81,11 +85,23 @@ const socials = [
 ]
 
 const handleSubmit = async () => {
-  await login({ ...form })
+  const response = await login({ ...form })
+
+  if (response && typeof response === 'object' && 'status' in response && response.status === 'challenge_required') {
+    push({
+      title: t('auth.otpTitle'),
+      description: t('auth.otpDescription'),
+      type: 'info',
+    })
+
+    await router.push({ path: '/auth/otp', query: { challenge_id: (response as any).challenge_id } })
+    return
+  }
+
   openModal({
     mode: 'alert',
     title: t('auth.loginTitle'),
-    description: 'Вы успешно авторизованы. Можно продолжать работу.',
+    description: t('alerts.loginSuccess'),
     cancelLabel: t('modal.close'),
   })
 }

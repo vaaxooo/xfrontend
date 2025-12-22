@@ -37,15 +37,15 @@ import { ref } from 'vue'
 import AuthCard from '@/components/auth/AuthCard.vue'
 import { useAuthApi } from '@/composables/useAuthApi'
 import { useI18n } from '@/composables/useI18n'
-import { useModal } from '@/composables/useModal'
+import { useAlerts } from '@/composables/useAlerts'
 
 definePageMeta({
   layout: 'auth',
 })
 
 const { t } = useI18n()
-const { requestRecovery } = useAuthApi()
-const { openModal } = useModal()
+const { requestPasswordReset } = useAuthApi()
+const { push } = useAlerts()
 
 const email = ref('')
 
@@ -57,12 +57,11 @@ const socials = [
 ]
 
 const handleSubmit = async () => {
-  await requestRecovery({ email: email.value })
-  openModal({
-    mode: 'alert',
+  await requestPasswordReset({ email: email.value })
+  push({
     title: t('alerts.recoverySentTitle'),
     description: t('alerts.recoverySentBody'),
-    cancelLabel: t('modal.close'),
+    type: 'info',
   })
 }
 </script>

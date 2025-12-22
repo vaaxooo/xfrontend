@@ -43,17 +43,22 @@ import AuthCard from '@/components/auth/AuthCard.vue'
 import { useAuthApi } from '@/composables/useAuthApi'
 import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
+import { useRoute } from 'vue-router'
+import { useAlerts } from '@/composables/useAlerts'
 
 definePageMeta({
   layout: 'auth',
 })
 
 const { t } = useI18n()
-const { verifyOtp, resendOtp } = useAuthApi()
+const { verifyChallengeTotp, resendChallengeEmail } = useAuthApi()
 const { openModal } = useModal()
+const { push } = useAlerts()
+const route = useRoute()
 
 const code = ref(Array(6).fill(''))
 const inputRefs = ref<HTMLInputElement[]>([])
+const challengeId = ref<string | null>(null)
 
 const setInputRef = (el: HTMLInputElement | null, index: number) => {
   if (el) {
@@ -78,27 +83,30 @@ const handleInput = (event: InputEvent, index: number) => {
 }
 
 const handleSubmit = async () => {
-  await verifyOtp({ code: code.value.join('') })
+  if (!challengeId.value) {
+    push({ title: t('auth.otpMissing'), description: t('auth.otpMissingDescription'), type: 'warning' })
+    return
+  }
+
+  await verifyChallengeTotp({ challenge_id: challengeId.value, otp_code: code.value.join('') })
   openModal({
     mode: 'alert',
     title: t('auth.otpTitle'),
-    description: 'Код подтверждён. Добро пожаловать!',
+    description: t('auth.otpConfirmed'),
     cancelLabel: t('modal.close'),
   })
 }
 
 const handleResend = async () => {
-  await resendOtp()
-  openModal({
-    mode: 'alert',
-    title: t('auth.otpTitle'),
-    description: t('auth.otpResend'),
-    cancelLabel: t('modal.close'),
-  })
+  if (!challengeId.value) return
+
+  await resendChallengeEmail({ challenge_id: challengeId.value })
+  push({ title: t('auth.otpResend'), description: t('auth.otpResendDescription'), type: 'info' })
 }
 
 onMounted(() => {
   inputRefs.value[0]?.focus()
+  challengeId.value = (route.query.challenge_id as string) || null
 })
 </script>
 

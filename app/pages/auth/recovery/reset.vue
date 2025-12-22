@@ -6,6 +6,26 @@
     <form class="auth-form" @submit.prevent="handleSubmit">
       <div class="field">
         <input
+          v-model="form.email"
+          type="email"
+          :placeholder="t('auth.emailPlaceholder')"
+          class="input"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <input
+          v-model="form.code"
+          type="text"
+          :placeholder="t('auth.resetCodePlaceholder')"
+          class="input"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <input
           v-model="form.password"
           type="password"
           :placeholder="t('auth.passwordPlaceholder')"
@@ -39,28 +59,35 @@ import { reactive } from 'vue'
 import AuthCard from '@/components/auth/AuthCard.vue'
 import { useAuthApi } from '@/composables/useAuthApi'
 import { useI18n } from '@/composables/useI18n'
-import { useModal } from '@/composables/useModal'
+import { useAlerts } from '@/composables/useAlerts'
 
 definePageMeta({
   layout: 'auth',
 })
 
 const { t } = useI18n()
-const { resetPassword } = useAuthApi()
-const { openModal } = useModal()
+const { confirmPasswordReset } = useAuthApi()
+const { push } = useAlerts()
 
 const form = reactive({
+  email: '',
+  code: '',
   password: '',
   confirmPassword: '',
 })
 
 const handleSubmit = async () => {
-  await resetPassword({ ...form })
-  openModal({
-    mode: 'alert',
+  if (form.password !== form.confirmPassword) {
+    push({ title: t('auth.resetSubmit'), description: t('alerts.passwordMismatch'), type: 'warning' })
+    return
+  }
+
+  await confirmPasswordReset({ email: form.email, code: form.code, password: form.password })
+
+  push({
     title: t('auth.resetSubmit'),
-    description: 'Пароль успешно изменён, теперь можно войти с новыми данными.',
-    cancelLabel: t('modal.close'),
+    description: t('alerts.passwordReset'),
+    type: 'success',
   })
 }
 </script>

@@ -1,5 +1,6 @@
 import { useState } from '#app'
 import type { Awaitable } from '@/composables/useApi'
+import type { Component } from 'vue'
 
 export type ModalField = {
   name: string
@@ -20,9 +21,13 @@ type ModalOptions = {
   onConfirm?: (values: Record<string, string>) => Awaitable<void>
   fields?: ModalField[]
   mode?: ModalMode
+  component?: Component
+  componentProps?: Record<string, unknown>
 }
 
-type ModalState = Required<Omit<ModalOptions, 'onConfirm'>> & {
+type ModalState = Omit<Required<Omit<ModalOptions, 'onConfirm'>>, 'component' | 'componentProps'> & {
+  component?: Component
+  componentProps?: Record<string, unknown>
   isOpen: boolean
   loading: boolean
   onConfirm?: (values: Record<string, string>) => Awaitable<void>
@@ -45,6 +50,8 @@ export const useModal = () => {
     confirmLabel: 'Подтвердить',
     cancelLabel: 'Отмена',
     fields: [],
+    component: undefined,
+    componentProps: undefined,
     values: {},
     mode: 'dialog',
     id: 0,
@@ -68,6 +75,8 @@ export const useModal = () => {
     modal.value.onConfirm = undefined
     modal.value.fields = []
     modal.value.values = {}
+    modal.value.component = undefined
+    modal.value.componentProps = undefined
   }
 
   const confirmModal = async () => {

@@ -9,10 +9,10 @@ export type ApiRequestOptions = {
 
 export const useApi = () => {
   const config = useRuntimeConfig()
-  const apiBase = config.public?.apiBase ?? '/api'
+  const apiBase = config.public?.apiBase || 'https://localhost:8081/api/v1'
 
   const request = async <T>(path: string, options: ApiRequestOptions = {}) => {
-    return await $fetch<T>(`${apiBase}${path}` as `/api${string}`, {
+    return await $fetch<T>(`${apiBase}${path}` as string, {
       method: options.method ?? 'POST',
       ...options,
     })
