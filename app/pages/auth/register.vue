@@ -88,6 +88,20 @@ const errors = reactive({
   confirmPassword: '',
 })
 
+const isAuthSessionResponse = (value: any): value is AuthSession => {
+  return (
+    value &&
+    typeof value === 'object' &&
+    'access_token' in value &&
+    'refresh_token' in value &&
+    Boolean((value as any).access_token)
+  )
+}
+
+const isVerificationRequiredResponse = (value: any): value is { user_id: string } => {
+  return value && typeof value === 'object' && 'user_id' in value && !('access_token' in value)
+}
+
 const socials = [
   { id: 'telegram', label: 'Telegram', icon: '/assets/images/icons/telegram.svg' },
   { id: 'facebook', label: 'Facebook', icon: '/assets/images/icons/facebook.svg' },
@@ -132,14 +146,8 @@ const handleSubmit = async () => {
   try {
     const response = await register({ ...form })
 
-    if (
-      response &&
-      typeof response === 'object' &&
-      'access_token' in response &&
-      typeof (response as any).access_token === 'string' &&
-      (response as any).access_token
-    ) {
-      setSession(response as AuthSession)
+    if (isAuthSessionResponse(response)) {
+      setSession(response)
       await fetchProfile()
 
       openModal({
@@ -153,7 +161,7 @@ const handleSubmit = async () => {
       return
     }
 
-    if (response && typeof response === 'object' && 'user_id' in response && !response.access_token) {
+    if (isVerificationRequiredResponse(response)) {
       openModal({
         mode: 'alert',
         title: t('auth.email_verification_title'),
