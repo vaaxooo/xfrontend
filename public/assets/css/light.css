@@ -173,7 +173,7 @@ img {
     border-radius: var(--radius-sm);
 }
 
-a.menu__link {
+.menu__link {
     display: flex;
     align-items: center;
     gap: var(--s-3);
@@ -185,9 +185,12 @@ a.menu__link {
     transition: transform var(--ease), background var(--ease), box-shadow var(--ease), color var(--ease);
     position: relative;
     outline: none;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
 }
 
-a.menu__link::before {
+.menu__link::before {
     content: "";
     width: 4px;
     height: 18px;
@@ -196,22 +199,22 @@ a.menu__link::before {
     transition: background var(--ease);
 }
 
-a.menu__link:hover {
+.menu__link:hover {
     background: rgb(253 253 254);
     transform: translateY(-1px);
 }
 
-a.menu__link:focus-visible {
+.menu__link:focus-visible {
     box-shadow: var(--focus);
 }
 
-a.menu__link.is-active {
+.menu__link.is-active {
     background-color: #fff;
     border: 1px solid rgba(118, 152, 187, 0.18);
     color: #000;
 }
 
-a.menu__link.is-active::before {
+.menu__link.is-active::before {
     background: #07acff;
 }
 
