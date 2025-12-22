@@ -4,7 +4,7 @@
       <div v-if="modal.isOpen" class="modal-backdrop">
         <div :class="['modal', modal.mode === 'alert' && 'modal--alert']">
           <header class="modal__header">
-            <div class="modal__title">{{ modal.title || t('modal.alertTitle') }}</div>
+            <div class="modal__title">{{ modal.title || t('modal.alert_title') }}</div>
             <button type="button" class="modal__close" @click="closeModal">✕</button>
           </header>
 
