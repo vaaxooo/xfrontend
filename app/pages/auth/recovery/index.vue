@@ -1,60 +1,68 @@
 <template>
-    <div class="auth-card block p-32">
-        <div class="auth-header">
-            <h1>Восстановление доступа</h1>
-            <p>Мы отправим Вам на электронную почту уникальную ссылку для изменения пароля.</p>
-        </div>
+  <AuthCard
+    :title="t('auth.recoveryTitle')"
+    :description="t('auth.recoveryDescription')"
+    :socials="socials"
+  >
+    <form class="auth-form" @submit.prevent="handleSubmit">
+      <div class="field">
+        <input
+          v-model="email"
+          type="email"
+          :placeholder="t('auth.emailPlaceholder')"
+          class="input"
+          required
+        >
+      </div>
 
-        <div class="auth-content">
+      <div class="auth-actions">
+        <button type="submit" class="button button--auth w-full center button-md">
+          {{ t('auth.recoverySubmit') }}
+          <img src="/assets/images/icons/arrow-right-white.svg" alt="arrow" class="w-24 h-24">
+        </button>
+      </div>
 
-            <div class="auth-form">
-                <!-- form -->
-                <div class="field">
-                    <input type="email" placeholder="Электронная почта" class="input">
-                </div>
-
-
-                <div class="auth-actions">
-                    <button class="button button--auth w-full center button-md">
-                        Восстановить доступ
-                        <img src="assets/images/icons/arrow-right-white.svg" alt="arrow" class="w-24 h-24">
-                    </button>
-                </div>
-
-                <div class="auth-footer">
-                    <span class="center justify-content-center">
-                        Вспомнили свой пароль? <a href="#" class="link link--primary">Войти в систему</a>
-                    </span>
-                </div>
-
-            </div>
-
-            <div class="auth-separator">
-                Или войдите с помощью
-            </div>
-
-
-            <div class="auth-socials">
-                <a href="#" class="button button--secondary button-social center justify-content-center">
-                    <img src="assets/images/icons/telegram.svg" alt="Telegram" class="w-32 h-32">
-                </a>
-                <a href="#" class="button button--secondary button-social center justify-content-center">
-                    <img src="assets/images/icons/facebook.svg" alt="Facebook" class="w-32 h-32">
-                </a>
-                <a href="#" class="button button--secondary button-social center justify-content-center">
-                    <img src="assets/images/icons/google.svg" alt="Google" class="w-32 h-32">
-                </a>
-                <a href="#" class="button button--secondary button-social center justify-content-center">
-                    <img src="assets/images/icons/apple.svg" alt="Apple" class="w-32 h-32">
-                </a>
-            </div>
-
-        </div>
-    </div>
+      <div class="auth-footer">
+        <span class="center justify-content-center">
+          {{ t('auth.rememberPassword') }}
+          <NuxtLink to="/auth/login" class="link link--primary">{{ t('auth.toLogin') }}</NuxtLink>
+        </span>
+      </div>
+    </form>
+  </AuthCard>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import AuthCard from '@/components/auth/AuthCard.vue'
+import { useAuthApi } from '@/composables/useAuthApi'
+import { useI18n } from '@/composables/useI18n'
+import { useModal } from '@/composables/useModal'
+
 definePageMeta({
-    layout: 'auth',
+  layout: 'auth',
 })
-</script>    
+
+const { t } = useI18n()
+const { requestRecovery } = useAuthApi()
+const { openModal } = useModal()
+
+const email = ref('')
+
+const socials = [
+  { id: 'telegram', label: 'Telegram', icon: '/assets/images/icons/telegram.svg' },
+  { id: 'facebook', label: 'Facebook', icon: '/assets/images/icons/facebook.svg' },
+  { id: 'google', label: 'Google', icon: '/assets/images/icons/google.svg' },
+  { id: 'apple', label: 'Apple', icon: '/assets/images/icons/apple.svg' },
+]
+
+const handleSubmit = async () => {
+  await requestRecovery({ email: email.value })
+  openModal({
+    mode: 'alert',
+    title: t('alerts.recoverySentTitle'),
+    description: t('alerts.recoverySentBody'),
+    cancelLabel: t('modal.close'),
+  })
+}
+</script>

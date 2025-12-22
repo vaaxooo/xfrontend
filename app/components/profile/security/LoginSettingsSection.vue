@@ -1,7 +1,7 @@
 <template>
   <div class="section">
     <div class="section-title">
-      Параметры входа
+      {{ t('security.loginSettings') }}
     </div>
 
     <div class="block row p-16">
@@ -12,11 +12,11 @@
 
         <div class="block-content">
           <div class="block-content__title">
-            Пароль от аккаунта
+            {{ t('security.passwordTitle') }}
           </div>
 
           <div class="block-content__description">
-            Пароль нужен, чтобы входить в аккаунт по email
+            {{ t('security.passwordDescription') }}
           </div>
         </div>
       </div>
@@ -27,7 +27,7 @@
           class="button button--secondary"
           @click="handlePasswordChange"
         >
-          Изменить
+          {{ t('security.changePassword') }}
         </button>
       </div>
     </div>
@@ -38,19 +38,37 @@
 
 <script setup lang="ts">
 import SocialAuthBlock from '@/components/profile/security/SocialAuthBlock.vue'
+import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
 import { useProfileApi } from '@/composables/useProfileApi'
 
+const { t } = useI18n()
 const { openModal } = useModal()
 const { changePassword } = useProfileApi()
 
 const handlePasswordChange = () => {
   openModal({
-    title: 'Сменить пароль',
-    description: 'Мы отправим ссылку для смены пароля на ваш email.',
-    confirmLabel: 'Отправить ссылку',
-    onConfirm: async () => {
-      await changePassword({ strategy: 'email-link' })
+    title: t('security.changePassword'),
+    description: t('security.changePasswordDescription'),
+    confirmLabel: t('security.changePasswordSubmit'),
+    cancelLabel: t('modal.cancel'),
+    fields: [
+      {
+        name: 'email',
+        label: t('profile.email'),
+        placeholder: 'you@example.com',
+        type: 'email',
+      },
+    ],
+    onConfirm: async (values) => {
+      await changePassword({ strategy: 'email-link', email: values.email })
+
+      openModal({
+        mode: 'alert',
+        title: t('alerts.recoverySentTitle'),
+        description: t('alerts.recoverySentBody'),
+        cancelLabel: t('modal.close'),
+      })
     },
   })
 }
