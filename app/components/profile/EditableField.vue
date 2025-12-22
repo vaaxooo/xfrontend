@@ -7,7 +7,7 @@
         <img src="/assets/images/icons/arrow-right.svg" class="table-section__icon">
       </template>
       <template v-else>
-        <input v-model="draft" class="input input--inline" :placeholder="label">
+        <input v-model="draft" class="input input--inline input-sm" :placeholder="label">
         <div class="table-section__actions">
           <button type="button" class="button button--success" @click.stop="handleSave">{{ t('profile.save') }}</button>
           <button type="button" class="button button--secondary" @click.stop="handleCancel">{{ t('profile.cancel') }}</button>
