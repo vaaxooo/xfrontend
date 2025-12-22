@@ -25,13 +25,15 @@ interface OtpPayload {
   code: string
 }
 
-const { request } = useApi()
+export const useAuthApi = () => {
+  const { request } = useApi()
 
-export const useAuthApi = () => ({
-  login: (payload: LoginPayload) => request('/auth/login', { body: payload }),
-  register: (payload: RegisterPayload) => request('/auth/register', { body: payload }),
-  requestRecovery: (payload: RecoveryPayload) => request('/auth/recovery', { body: payload }),
-  resetPassword: (payload: ResetPasswordPayload) => request('/auth/reset', { body: payload }),
-  verifyOtp: (payload: OtpPayload) => request('/auth/otp/verify', { body: payload }),
-  resendOtp: () => request('/auth/otp/resend'),
-})
+  return {
+    login: (payload: LoginPayload) => request('/auth/login', { body: payload }),
+    register: (payload: RegisterPayload) => request('/auth/register', { body: payload }),
+    requestRecovery: (payload: RecoveryPayload) => request('/auth/recovery', { body: payload }),
+    resetPassword: (payload: ResetPasswordPayload) => request('/auth/reset', { body: payload }),
+    verifyOtp: (payload: OtpPayload) => request('/auth/otp/verify', { body: payload }),
+    resendOtp: () => request('/auth/otp/resend'),
+  }
+}
