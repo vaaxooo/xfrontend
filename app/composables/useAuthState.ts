@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useState } from '#imports'
+import { useCookie, useState } from '#imports'
 
 export type AuthProfile = {
   user_id: string
@@ -16,33 +16,21 @@ export type AuthSession = AuthProfile & {
   refresh_token: string
 }
 
-const readToken = (key: string) => (process.client ? localStorage.getItem(key) : null)
-
-const persistToken = (key: string, value: string | null) => {
-  if (!process.client) return
-
-  if (value) {
-    localStorage.setItem(key, value)
-  } else {
-    localStorage.removeItem(key)
-  }
-}
-
 export const useAuthState = () => {
-  const accessToken = useState<string | null>('access_token', () => readToken('access_token'))
-  const refreshToken = useState<string | null>('refresh_token', () => readToken('refresh_token'))
+  const accessTokenCookie = useCookie<string | null>('access_token', { sameSite: 'lax' })
+  const refreshTokenCookie = useCookie<string | null>('refresh_token', { sameSite: 'lax' })
+
+  const accessToken = useState<string | null>('access_token', () => accessTokenCookie.value ?? null)
+  const refreshToken = useState<string | null>('refresh_token', () => refreshTokenCookie.value ?? null)
   const user = useState<AuthProfile | null>('auth-user', () => null)
 
   if (process.client) {
-    const storedAccess = readToken('access_token')
-    const storedRefresh = readToken('refresh_token')
-
-    if (storedAccess && !accessToken.value) {
-      accessToken.value = storedAccess
+    if (accessTokenCookie.value && !accessToken.value) {
+      accessToken.value = accessTokenCookie.value
     }
 
-    if (storedRefresh && !refreshToken.value) {
-      refreshToken.value = storedRefresh
+    if (refreshTokenCookie.value && !refreshToken.value) {
+      refreshToken.value = refreshTokenCookie.value
     }
   }
 
@@ -51,8 +39,9 @@ export const useAuthState = () => {
   const setSession = (session: AuthSession) => {
     accessToken.value = session.access_token
     refreshToken.value = session.refresh_token
-    persistToken('access_token', session.access_token)
-    persistToken('refresh_token', session.refresh_token)
+
+    accessTokenCookie.value = session.access_token
+    refreshTokenCookie.value = session.refresh_token
 
     user.value = {
       user_id: session.user_id,
@@ -72,8 +61,9 @@ export const useAuthState = () => {
   const clearSession = () => {
     accessToken.value = null
     refreshToken.value = null
-    persistToken('access_token', null)
-    persistToken('refresh_token', null)
+
+    accessTokenCookie.value = null
+    refreshTokenCookie.value = null
     user.value = null
   }
 
