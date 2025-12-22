@@ -1,4 +1,4 @@
-import { navigateTo, useRuntimeConfig } from '#app'
+import { reloadNuxtApp, useRuntimeConfig } from '#app'
 import { useRoute } from '#imports'
 import { useAuthState } from '@/composables/useAuthState'
 
@@ -29,9 +29,7 @@ export const useApi = () => {
         if (response.status === 401 || response.status === 403) {
           clearSession()
 
-          if (!route.path.startsWith('/auth')) {
-            await navigateTo('/auth/login', { replace: true })
-          }
+          await reloadNuxtApp({ path: '/auth/login' })
         }
 
         throw response._data ?? new Error('Request failed')
