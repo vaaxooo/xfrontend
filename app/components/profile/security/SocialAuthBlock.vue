@@ -1,45 +1,90 @@
 <template>
-	<div class="block p-16">
-		<div class="row justify-content-start">
-			<div class="icon">
-				<img src="/assets/images/icons/id.svg" class="w-32 h-32">
-			</div>
+  <div class="block p-16">
+    <div class="row justify-content-start">
+      <div class="icon">
+        <img src="/assets/images/icons/id.svg" class="w-32 h-32">
+      </div>
 
-			<div class="block-content">
-				<div class="block-content__title">
-					Вход через соцсети
-				</div>
+      <div class="block-content">
+        <div class="block-content__title">
+          Вход через соцсети
+        </div>
 
-				<div class="block-content__description">
-					Привяжите аккаунты соцсетей, чтобы входить с их помощью
-				</div>
-			</div>
-		</div>
+        <div class="block-content__description">
+          Привяжите аккаунты соцсетей, чтобы входить с их помощью
+        </div>
+      </div>
+    </div>
 
-		<div class="block-action row justify-content-start socials">
-			<SocialButton
-				icon="/assets/images/icons/telegram.svg"
-				title="Telegram"
-				status-icon="/assets/images/icons/green-check.svg"
-			/>
-
-			<SocialButton
-				icon="/assets/images/icons/google.svg"
-				title="Google"
-				status-icon="/assets/images/icons/plus.svg"
-			/>
-
-			<SocialButton
-				icon="/assets/images/icons/apple.svg"
-				title="Apple ID"
-				status-icon="/assets/images/icons/plus.svg"
-			/>
-
-			<SocialButton
-				icon="/assets/images/icons/facebook.svg"
-				title="Facebook"
-				status-icon="/assets/images/icons/plus.svg"
-			/>
-		</div>
-	</div>
+    <div class="block-action row justify-content-start socials">
+      <SocialButton
+        v-for="provider in providers"
+        :key="provider.id"
+        :icon="provider.icon"
+        :title="provider.title"
+        :status-icon="provider.connected ? '/assets/images/icons/green-check.svg' : '/assets/images/icons/plus.svg'"
+        @click="() => handleProviderClick(provider)"
+      />
+    </div>
+  </div>
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useModal } from '@/composables/useModal'
+import SocialButton from '@/components/profile/security/SocialButton.vue'
+import { useProfileApi } from '@/composables/useProfileApi'
+
+interface Provider {
+  id: string
+  title: string
+  icon: string
+  connected: boolean
+}
+
+const providers = ref<Provider[]>([
+  {
+    id: 'telegram',
+    title: 'Telegram',
+    icon: '/assets/images/icons/telegram.svg',
+    connected: true,
+  },
+  {
+    id: 'google',
+    title: 'Google',
+    icon: '/assets/images/icons/google.svg',
+    connected: false,
+  },
+  {
+    id: 'apple',
+    title: 'Apple ID',
+    icon: '/assets/images/icons/apple.svg',
+    connected: false,
+  },
+  {
+    id: 'facebook',
+    title: 'Facebook',
+    icon: '/assets/images/icons/facebook.svg',
+    connected: false,
+  },
+])
+
+const { openModal } = useModal()
+const { toggleSocialAccount } = useProfileApi()
+
+const handleProviderClick = (provider: Provider) => {
+  openModal({
+    title: provider.connected ? `Отключить ${provider.title}` : `Привязать ${provider.title}`,
+    description: provider.connected
+      ? 'Доступ через этот аккаунт будет отключён.'
+      : 'Мы перенаправим вас для подтверждения доступа.',
+    confirmLabel: provider.connected ? 'Отключить' : 'Привязать',
+    onConfirm: async () => {
+      await toggleSocialAccount(provider.id, !provider.connected)
+      providers.value = providers.value.map((item) =>
+        item.id === provider.id ? { ...item, connected: !item.connected } : item,
+      )
+    },
+  })
+}
+</script>
