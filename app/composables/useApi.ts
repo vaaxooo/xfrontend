@@ -1,4 +1,4 @@
-import { useRuntimeConfig } from '#app'
+import { reloadNuxtApp, useRuntimeConfig } from '#app'
 import { useAuthState } from '@/composables/useAuthState'
 
 export type Awaitable<T> = T | Promise<T>
@@ -11,7 +11,7 @@ export type ApiRequestOptions = {
 export const useApi = () => {
   const config = useRuntimeConfig()
   const apiBase = config.public?.apiBase || 'https://localhost:8081/api/v1'
-  const { accessToken } = useAuthState()
+  const { accessToken, clearSession } = useAuthState()
 
   const request = async <T>(path: string, options: ApiRequestOptions = {}) => {
     const headers = {
@@ -23,6 +23,15 @@ export const useApi = () => {
       method: options.method ?? 'POST',
       ...options,
       headers,
+      onResponseError: async ({ response }) => {
+        if ((response.status === 401 || response.status === 403) && accessToken.value) {
+          clearSession()
+
+          await reloadNuxtApp({ path: '/auth/login' })
+        }
+
+        throw response._data ?? new Error('Request failed')
+      },
     })
   }
 
