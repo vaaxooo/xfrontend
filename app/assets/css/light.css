@@ -880,7 +880,7 @@ a:hover {
     .block-action.socials {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-    
+
 }
 
 @media (max-width: 991.98px) {
@@ -896,6 +896,72 @@ a:hover {
     }
 
 
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--s-5);
+    z-index: 999;
+}
+
+.modal {
+    background: var(--panel-strong);
+    border-radius: var(--radius);
+    width: min(480px, 100%);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    display: grid;
+    gap: var(--s-4);
+    padding: var(--s-5);
+}
+
+.modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+}
+
+.modal__title {
+    font-size: var(--fs-18);
+    font-weight: 700;
+}
+
+.modal__close {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+}
+
+.modal__body {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--s-3);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity var(--ease);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }
 
 @media (max-width: 575.98px) {
