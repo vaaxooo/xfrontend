@@ -22,9 +22,9 @@ import { useI18n } from '@/composables/useI18n'
 import { useProfileApi } from '@/composables/useProfileApi'
 
 const rawFields = ref([
-  { key: 'firstName', value: 'Никита' },
-  { key: 'middleName', value: 'Александрович' },
-  { key: 'lastName', value: 'Печенкин' },
+  { key: 'first_name', value: 'Никита' },
+  { key: 'middle_name', value: 'Александрович' },
+  { key: 'last_name', value: 'Печенкин' },
   { key: 'email', value: 'vaaxooo@gmail.com' },
 ])
 

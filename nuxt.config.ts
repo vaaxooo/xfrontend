@@ -8,14 +8,14 @@ export default defineNuxtConfig({
 
 
         experimental: {
-                payloadExtraction: true,
-                renderJsonPayloads: true
+			payloadExtraction: true,
+			renderJsonPayloads: true
         },
 
         runtimeConfig: {
-                public: {
-                        apiBase: 'https://localhost:8081/api/v1'
-                }
+			public: {
+				apiBase: 'http://localhost:8080/api/v1'
+			}
         },
 
 	app: {

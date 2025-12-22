@@ -743,6 +743,14 @@ a:hover {
     padding: 4px 12px;
 }
 
+.button-sm {
+    height: 40px;
+}
+
+.h-40 {
+    height: 40px!important;
+}
+
 /* =========================================================
    Responsive: Bootstrap-like breakpoints
    Mobile-first approach:

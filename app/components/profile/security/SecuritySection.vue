@@ -52,7 +52,7 @@ const handleEnableTwoFactor = async () => {
     confirmLabel: t('security.enable'),
     cancelLabel: t('modal.cancel'),
     onConfirm: async (values) => {
-      await confirmTotpSetup({ code: values.code })
+      await confirmTotpSetup({ code: values.code ?? '' })
 
       push({
         title: t('alerts.totpEnabledTitle'),

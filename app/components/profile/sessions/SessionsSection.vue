@@ -70,7 +70,7 @@ const sessions = ref<Session[]>([
 ])
 
 const { openModal } = useModal()
-const { terminateSession, terminateAllSessions } = useProfileApi()
+// const { terminateSession, terminateAllSessions } = useProfileApi()
 
 const handleTerminateSession = (sessionId: string) => {
   openModal({
@@ -78,7 +78,7 @@ const handleTerminateSession = (sessionId: string) => {
     description: 'Подтвердите завершение выбранного сеанса.',
     confirmLabel: 'Завершить',
     onConfirm: async () => {
-      await terminateSession(sessionId)
+      //await terminateSession(sessionId)
       sessions.value = sessions.value.filter((session) => session.id !== sessionId)
     },
   })
@@ -90,7 +90,7 @@ const handleTerminateAll = () => {
     description: 'Вы будете разлогинены на всех устройствах кроме текущего.',
     confirmLabel: 'Завершить все',
     onConfirm: async () => {
-      await terminateAllSessions()
+      //await terminateAllSessions()
       sessions.value = sessions.value.filter((session) => !session.closable)
     },
   })

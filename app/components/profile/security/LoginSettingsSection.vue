@@ -61,7 +61,16 @@ const handlePasswordChange = () => {
       },
     ],
     onConfirm: async (values) => {
-      await requestPasswordReset({ email: values.email })
+      if (values.email) {
+        await requestPasswordReset({ email: values.email })
+      } else {
+        openModal({
+          mode: 'alert',
+          title: t('alerts.errorTitle'),
+          description: t('alerts.invalidEmail'),
+          cancelLabel: t('modal.close'),
+        })
+      }
 
       openModal({
         mode: 'alert',

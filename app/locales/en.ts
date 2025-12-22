@@ -35,9 +35,9 @@ export default {
   },
   profile: {
     personalData: 'Personal data',
-    firstName: 'First name',
-    middleName: 'Middle name',
-    lastName: 'Last name',
+    first_name: 'First name',
+    middle_name: 'Middle name',
+    last_name: 'Last name',
     email: 'E-mail',
     edit: 'Edit',
     save: 'Save',
