@@ -1,7 +1,8 @@
-import { useRuntimeConfig } from '#app'
+import { useApi } from '@/composables/useApi'
 
 interface ChangePasswordPayload {
   strategy: string
+  email?: string
 }
 
 interface UpdateProfilePayload {
@@ -9,15 +10,7 @@ interface UpdateProfilePayload {
   value: string
 }
 
-const request = async <T>(path: string, options: { body?: Record<string, unknown> } = {}) => {
-  const config = useRuntimeConfig()
-  const apiBase = config.public?.apiBase ?? '/api'
-
-  return await $fetch<T>(`${apiBase}${path}` as `/api${string}`, {
-    method: 'POST',
-    ...options,
-  })
-}
+const { request } = useApi()
 
 export const useProfileApi = () => ({
   changePassword: (payload: ChangePasswordPayload) =>

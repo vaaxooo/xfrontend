@@ -1,5 +1,5 @@
 <template>
-  <AppSection title="Безопасность">
+  <AppSection :title="t('security.twoFactor')">
     <div class="block row p-16">
       <div class="row">
         <div class="icon">
@@ -8,11 +8,11 @@
 
         <div class="block-content">
           <div class="block-content__title">
-            Двухфакторная аутентификация
+            {{ t('security.twoFactor') }}
           </div>
 
           <div class="block-content__description">
-            Дополнительный способ защиты аккаунта.
+            {{ t('security.twoFactorDescription') }}
           </div>
         </div>
       </div>
@@ -23,7 +23,7 @@
           class="button button--success"
           @click="handleEnableTwoFactor"
         >
-          Включить
+          {{ t('security.enable') }}
         </button>
       </div>
     </div>
@@ -32,19 +32,28 @@
 
 <script setup lang="ts">
 import AppSection from '@/components/common/AppSection.vue'
+import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
 import { useProfileApi } from '@/composables/useProfileApi'
 
+const { t } = useI18n()
 const { openModal } = useModal()
 const { enableTwoFactor } = useProfileApi()
 
 const handleEnableTwoFactor = () => {
   openModal({
-    title: 'Включить двухфакторную аутентификацию',
-    description: 'Мы отправим код на ваш email или в подключённый мессенджер.',
-    confirmLabel: 'Получить код',
+    title: t('security.twoFactor'),
+    description: t('security.twoFactorDescription'),
+    confirmLabel: t('security.enable'),
+    cancelLabel: t('modal.cancel'),
     onConfirm: async () => {
       await enableTwoFactor()
+      openModal({
+        mode: 'alert',
+        title: t('security.twoFactor'),
+        description: t('security.twoFactorDescription'),
+        cancelLabel: t('modal.close'),
+      })
     },
   })
 }

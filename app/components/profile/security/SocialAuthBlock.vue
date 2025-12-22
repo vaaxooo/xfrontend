@@ -7,11 +7,11 @@
 
       <div class="block-content">
         <div class="block-content__title">
-          Вход через соцсети
+          {{ t('security.socialTitle') }}
         </div>
 
         <div class="block-content__description">
-          Привяжите аккаунты соцсетей, чтобы входить с их помощью
+          {{ t('security.socialDescription') }}
         </div>
       </div>
     </div>
@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
 import SocialButton from '@/components/profile/security/SocialButton.vue'
 import { useProfileApi } from '@/composables/useProfileApi'
@@ -69,6 +70,7 @@ const providers = ref<Provider[]>([
   },
 ])
 
+const { t } = useI18n()
 const { openModal } = useModal()
 const { toggleSocialAccount } = useProfileApi()
 
@@ -78,7 +80,8 @@ const handleProviderClick = (provider: Provider) => {
     description: provider.connected
       ? 'Доступ через этот аккаунт будет отключён.'
       : 'Мы перенаправим вас для подтверждения доступа.',
-    confirmLabel: provider.connected ? 'Отключить' : 'Привязать',
+    confirmLabel: provider.connected ? t('modal.confirm') : t('security.enable'),
+    cancelLabel: t('modal.cancel'),
     onConfirm: async () => {
       await toggleSocialAccount(provider.id, !provider.connected)
       providers.value = providers.value.map((item) =>
