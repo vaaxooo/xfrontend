@@ -1,7 +1,7 @@
 <template>
   <div class="section">
     <div class="section-title">
-      История активности
+      {{ t('sessions.history_title') }}
 
       <div class="section-actions">
         <button
@@ -9,7 +9,7 @@
           class="button button--danger"
           @click="handleTerminateAll"
         >
-          Завершить все сеансы
+          {{ t('sessions.terminate_all') }}
         </button>
       </div>
     </div>
@@ -103,9 +103,9 @@ const toSessionView = (session: ApiSession): SessionView => {
   const device = parseUserAgent(session.user_agent || '')
 
   const details = [
-    `IP-адрес: ${session.ip} `,
-    `Открыта: ${formatDate(session.created_at)}`,
-    session.current ? 'Текущая сессия' : '',
+    t('sessions.ip_address', { ip: session.ip }),
+    t('sessions.opened_at', { date: formatDate(session.created_at) }),
+    session.current ? t('sessions.current_session') : '',
   ]
     .filter(Boolean)
     .join('<br>')
@@ -125,24 +125,24 @@ const loadSessions = async () => {
     const items = (response as { sessions?: ApiSession[] }).sessions ?? []
     sessions.value = items.map(toSessionView)
   } catch (error) {
-    const message = getApiErrorMessage(error, t) || t('alerts.error_title')
+    const message = t('alerts.error_title') || getApiErrorMessage(error, t)
     push({ title: t('alerts.error_title'), description: message, type: 'error' })
   }
 }
 
 const handleTerminateSession = (sessionId: string) => {
   openModal({
-    title: 'Завершить сеанс',
-    description: 'Подтвердите завершение выбранного сеанса.',
-    confirmLabel: 'Завершить',
+    title: t('sessions.terminate_one'),
+    description: t('sessions.terminate_one_description'),
+    confirmLabel: t('sessions.terminate_confirm'),
     onConfirm: async () => {
       try {
         const response = await revokeSession(sessionId)
-        const message = getApiSuccessMessage(response) || 'Сеанс завершён.'
-        push({ title: 'Готово', description: message, type: 'success' })
+        const message = t('sessions.terminate_one_success') || getApiSuccessMessage(response)
+        push({ title: t('sessions.success_title'), description: message, type: 'success' })
         sessions.value = sessions.value.filter((session) => session.id !== sessionId)
       } catch (error) {
-        const message = getApiErrorMessage(error, t) || t('alerts.error_title')
+        const message = t('alerts.error_title') || getApiErrorMessage(error, t)
         push({ title: t('alerts.error_title'), description: message, type: 'error' })
         throw error
       }
@@ -152,9 +152,9 @@ const handleTerminateSession = (sessionId: string) => {
 
 const handleTerminateAll = () => {
   openModal({
-    title: 'Завершить все сеансы',
-    description: 'Вы будете разлогинены на всех устройствах кроме текущего.',
-    confirmLabel: 'Завершить все',
+    title: t('sessions.terminate_all'),
+    description: t('sessions.terminate_all_description'),
+    confirmLabel: t('sessions.terminate_all_confirm'),
     onConfirm: async () => {
       if (!refreshToken.value) {
         push({ title: t('alerts.error_title'), description: t('alerts.login_error_description'), type: 'error' })
@@ -163,11 +163,11 @@ const handleTerminateAll = () => {
 
       try {
         const response = await revokeOtherSessions(refreshToken.value)
-        const message = getApiSuccessMessage(response) || 'Другие сеансы завершены.'
-        push({ title: 'Готово', description: message, type: 'success' })
+        const message = t('sessions.terminate_all_success') || getApiSuccessMessage(response)
+        push({ title: t('sessions.success_title'), description: message, type: 'success' })
         sessions.value = sessions.value.filter((session) => !session.closable)
       } catch (error) {
-        const message = getApiErrorMessage(error, t) || t('alerts.error_title')
+        const message = t('alerts.error_title') || getApiErrorMessage(error, t)
         push({ title: t('alerts.error_title'), description: message, type: 'error' })
         throw error
       }

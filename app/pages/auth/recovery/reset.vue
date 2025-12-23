@@ -113,7 +113,7 @@ const handleSubmit = async () => {
   } catch (error: any) {
     const message = getApiErrorMessage(error, t)
 
-    push({ title: t('alerts.error_title'), description: message || t('alerts.login_error_description'), type: 'error' })
+    push({ title: t('alerts.error_title'), description: t('alerts.login_error_description') || message, type: 'error' })
   }
 }
 </script>

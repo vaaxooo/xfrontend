@@ -76,10 +76,12 @@ const { toggleSocialAccount } = useProfileApi()
 
 const handleProviderClick = (provider: Provider) => {
   openModal({
-    title: provider.connected ? `Отключить ${provider.title}` : `Привязать ${provider.title}`,
+    title: provider.connected
+      ? t('security.social_disconnect_title', { provider: provider.title })
+      : t('security.social_connect_title', { provider: provider.title }),
     description: provider.connected
-      ? 'Доступ через этот аккаунт будет отключён.'
-      : 'Мы перенаправим вас для подтверждения доступа.',
+      ? t('security.social_disconnect_description')
+      : t('security.social_connect_description'),
     confirmLabel: provider.connected ? t('modal.confirm') : t('security.enable'),
     cancelLabel: t('modal.cancel'),
     onConfirm: async () => {

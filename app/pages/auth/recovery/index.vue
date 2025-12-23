@@ -104,7 +104,7 @@ const handleSubmit = async () => {
 
     push({
       title: t('alerts.error_title'),
-      description: message || t('alerts.login_error_description'),
+      description: t('alerts.login_error_description') || message,
       type: 'error',
     })
   }
@@ -144,7 +144,7 @@ const handleGoogleLogin = async () => {
 
     push({
       title: t('alerts.error_title'),
-      description: message || t('alerts.login_error_description'),
+      description: t('alerts.login_error_description') || message,
       type: 'error',
     })
   }
