@@ -58,11 +58,39 @@
 </template>
 
 <script setup lang="ts">
+import { onUnmounted, ref, watch } from 'vue'
 import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
 
 const { modal, closeModal, confirmModal } = useModal()
 const { t } = useI18n()
+const previousOverflow = ref<string | null>(null)
+
+watch(
+  () => modal.value.isOpen,
+  (isOpen) => {
+    if (!process.client) return
+
+    if (isOpen) {
+      if (previousOverflow.value === null) {
+        previousOverflow.value = document.body.style.overflow
+      }
+      document.body.style.overflow = 'hidden'
+    } else if (previousOverflow.value !== null) {
+      document.body.style.overflow = previousOverflow.value
+      previousOverflow.value = null
+    }
+  },
+  { immediate: true },
+)
+
+onUnmounted(() => {
+  if (!process.client) return
+  if (previousOverflow.value !== null) {
+    document.body.style.overflow = previousOverflow.value
+    previousOverflow.value = null
+  }
+})
 </script>
 
 <style scoped>

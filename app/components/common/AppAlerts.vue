@@ -31,24 +31,28 @@ const { alerts, dismiss } = useAlerts()
 <style scoped>
 .alerts {
   position: fixed;
-  right: var(--s-4);
-  top: var(--s-4);
+  left: 50%;
+  bottom: var(--s-4);
   z-index: 90;
   display: grid;
   gap: var(--s-3);
-  width: min(360px, calc(100% - var(--s-6)));
+  width: min(420px, calc(100% - var(--s-6)));
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
 .alert {
-  background: #fff;
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 16px;
   padding: var(--s-3) var(--s-4);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--s-3);
-  border: 1px solid var(--muted-100);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
 }
 
 .alert__title {
@@ -67,6 +71,7 @@ const { alerts, dismiss } = useAlerts()
   cursor: pointer;
   font-size: var(--fs-16);
   line-height: 1;
+  color: var(--muted);
 }
 
 .alert--success {
@@ -93,6 +98,6 @@ const { alerts, dismiss } = useAlerts()
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(10px);
 }
 </style>

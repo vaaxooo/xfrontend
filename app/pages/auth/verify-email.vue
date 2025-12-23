@@ -32,6 +32,7 @@ import { useI18n } from '@/composables/useI18n'
 import { useAuthApi } from '@/composables/useAuthApi'
 import { useAlerts } from '@/composables/useAlerts'
 import { useAuthState, type AuthSession } from '@/composables/useAuthState'
+import { getApiErrorMessage, getApiSuccessMessage } from '@/utils/apiMessages'
 
 definePageMeta({
   layout: 'auth',
@@ -51,13 +52,20 @@ const email = computed(() => (route.query.email as string) || '')
 const maskedEmail = computed(() => (route.query.masked_email as string) || email.value)
 
 const handleResend = async () => {
+  let response: unknown = null
+
   if (challengeId.value) {
-    await resendChallengeEmail({ challenge_id: challengeId.value })
+    response = await resendChallengeEmail({ challenge_id: challengeId.value })
   } else if (email.value) {
-    await requestEmailConfirmation({ email: email.value })
+    response = await requestEmailConfirmation({ email: email.value })
   }
 
-  push({ title: t('auth.resend_email'), description: t('auth.otp_resend_description'), type: 'info' })
+  const successMessage = getApiSuccessMessage(response)
+  push({
+    title: t('auth.resend_email'),
+    description: successMessage || t('auth.otp_resend_description'),
+    type: 'info',
+  })
 }
 
 const fetchProfile = async () => {
@@ -102,11 +110,10 @@ const handleCheckStatus = async () => {
 
     statusMessage.value = t('auth.email_verification_pending')
   } catch (error: any) {
-    const code = error?.data?.error?.code
-    const message = error?.data?.error?.message
+    const message = getApiErrorMessage(error)
     push({
       title: t('alerts.error_title'),
-      description: t('alerts.login_error_description') || message || code,
+      description: message || t('alerts.login_error_description'),
       type: 'error',
     })
   }

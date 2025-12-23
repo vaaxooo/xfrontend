@@ -123,4 +123,7 @@ export default {
     email_verification_sent_title: 'Confirmation email sent',
     email_verification_sent_body: 'Check your mailbox and follow the link to verify your address.',
   },
+  sessions: {
+    unknown_device: 'Unknown device',
+  },
 }

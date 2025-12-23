@@ -42,6 +42,7 @@ import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
 import { useAuthApi } from '@/composables/useAuthApi'
 import { useAlerts } from '@/composables/useAlerts'
+import { getApiErrorMessage, getApiSuccessMessage } from '@/utils/apiMessages'
 
 const { t } = useI18n()
 const { openModal, setModalErrors } = useModal()
@@ -106,21 +107,20 @@ const handlePasswordChange = () => {
       }
 
       try {
-        await changePassword({
+        const response = await changePassword({
           current_password: values.current_password || '',
           new_password: values.new_password || '',
         })
 
+        const successMessage = getApiSuccessMessage(response)
+
         push({
           title: t('alerts.password_changed'),
-          description: t('alerts.password_changed_body'),
+          description: successMessage || t('alerts.password_changed_body'),
           type: 'success',
         })
       } catch (error) {
-        const message =
-          typeof error === 'object' && error && 'message' in error
-            ? (error as { message?: string }).message
-            : undefined
+        const message = getApiErrorMessage(error)
 
         setModalErrors({
           form: message || t('alerts.error_title'),

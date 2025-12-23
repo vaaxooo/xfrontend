@@ -43,6 +43,7 @@ import { useAlerts } from '@/composables/useAlerts'
 import { useAuthState, type AuthSession } from '@/composables/useAuthState'
 import { useGoogleAuth } from '@/composables/useGoogleAuth'
 import { useRouter } from 'vue-router'
+import { getApiErrorMessage, getApiSuccessMessage } from '@/utils/apiMessages'
 
 definePageMeta({
   layout: 'auth',
@@ -91,14 +92,15 @@ const handleSubmit = async () => {
   if (!validate()) return
 
   try {
-    await requestPasswordReset({ email: email.value })
+    const response = await requestPasswordReset({ email: email.value })
+    const successMessage = getApiSuccessMessage(response)
     push({
       title: t('alerts.recovery_sent_title'),
-      description: t('alerts.recovery_sent_body'),
+      description: successMessage || t('alerts.recovery_sent_body'),
       type: 'info',
     })
   } catch (error: any) {
-    const message = error?.error?.message || error?.message || error?.data?.error?.message || error?.data?.error?.code
+    const message = getApiErrorMessage(error)
 
     push({
       title: t('alerts.error_title'),
@@ -138,7 +140,7 @@ const handleGoogleLogin = async () => {
 
     push({ title: t('alerts.error_title'), description: t('alerts.login_error_description'), type: 'error' })
   } catch (error: any) {
-    const message = error?.message ?? error?.data?.error?.message ?? error?.data?.error?.code
+    const message = getApiErrorMessage(error)
 
     push({
       title: t('alerts.error_title'),
