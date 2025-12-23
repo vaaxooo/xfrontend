@@ -20,10 +20,10 @@
       <div class="block-action">
         <button
           type="button"
-          class="button button--success"
-          @click="handleEnableTwoFactor"
+          :class="twoFactorEnabled ? 'button button--secondary' : 'button button--success'"
+          @click="twoFactorEnabled ? handleDisableTwoFactor() : handleEnableTwoFactor()"
         >
-          {{ t('security.enable') }}
+          {{ twoFactorEnabled ? t('security.disable') : t('security.enable') }}
         </button>
       </div>
     </div>
@@ -36,14 +36,22 @@ import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
 import { useAuthApi } from '@/composables/useAuthApi'
 import TwoFactorSetupContent from '@/components/profile/security/TwoFactorSetupContent.vue'
+import DisableTwoFactorOtp from '@/components/profile/security/DisableTwoFactorOtp.vue'
 import { useAlerts } from '@/composables/useAlerts'
+import { computed } from 'vue'
+import { useAuthState } from '@/composables/useAuthState'
 
 const { t } = useI18n()
 const { openModal } = useModal()
-const { startTotpSetup, confirmTotpSetup } = useAuthApi()
+const { startTotpSetup, confirmTotpSetup, disableTotp } = useAuthApi()
 const { push } = useAlerts()
+const { user, setUserProfile } = useAuthState()
+
+const twoFactorEnabled = computed(() => Boolean(user.value?.login_settings?.two_factor_enabled))
 
 const handleEnableTwoFactor = async () => {
+  if (twoFactorEnabled.value) return
+
   const enrollment = await startTotpSetup()
 
   openModal({
@@ -53,6 +61,16 @@ const handleEnableTwoFactor = async () => {
     cancelLabel: t('modal.cancel'),
     onConfirm: async (values) => {
       await confirmTotpSetup({ code: values.code ?? '' })
+
+      if (user.value) {
+        setUserProfile({
+          ...user.value,
+          login_settings: {
+            ...(user.value.login_settings ?? {}),
+            two_factor_enabled: true,
+          },
+        })
+      }
 
       push({
         title: t('alerts.totp_enabled_title'),
@@ -73,6 +91,56 @@ const handleEnableTwoFactor = async () => {
       secret: (enrollment as any)?.secret,
       otpauthUri: (enrollment as any)?.otpauth_uri,
       qr: (enrollment as any)?.qr,
+    },
+  })
+}
+
+const handleDisableTwoFactor = () => {
+  openModal({
+    title: t('security.two_factor'),
+    description: t('security.two_factor_disable_confirmation'),
+    confirmLabel: t('security.disable'),
+    cancelLabel: t('modal.cancel'),
+    fields: [
+      {
+        name: 'code',
+        label: t('security.disable_code_label'),
+        placeholder: '123456',
+        type: 'text',
+      },
+    ],
+    component: DisableTwoFactorOtp,
+    onConfirm: async (values) => {
+      const code = (values.code ?? '').trim()
+
+      if (code.length !== 6) {
+        push({ title: t('alerts.error_title'), description: t('alerts.totp_required'), type: 'warning' })
+        throw new Error('otp_required')
+      }
+
+      try {
+        await disableTotp({ code })
+
+        if (user.value) {
+          setUserProfile({
+            ...user.value,
+            login_settings: {
+              ...(user.value.login_settings ?? {}),
+              two_factor_enabled: false,
+            },
+          })
+        }
+
+        push({
+          title: t('alerts.totp_disabled_title'),
+          description: t('alerts.totp_disabled_body'),
+          type: 'success',
+        })
+      } catch (error: any) {
+        const codeError = error?.data?.error?.message || t('alerts.totp_invalid')
+        push({ title: t('alerts.error_title'), description: codeError, type: 'error' })
+        throw error
+      }
     },
   })
 }
