@@ -40,6 +40,7 @@ import DisableTwoFactorOtp from '@/components/profile/security/DisableTwoFactorO
 import { useAlerts } from '@/composables/useAlerts'
 import { computed } from 'vue'
 import { useAuthState } from '@/composables/useAuthState'
+import { getApiErrorMessage, getApiSuccessMessage } from '@/utils/apiMessages'
 
 const { t } = useI18n()
 const { openModal } = useModal()
@@ -60,7 +61,9 @@ const handleEnableTwoFactor = async () => {
     confirmLabel: t('security.enable'),
     cancelLabel: t('modal.cancel'),
     onConfirm: async (values) => {
-      await confirmTotpSetup({ code: values.code ?? '' })
+      const response = await confirmTotpSetup({ code: values.code ?? '' })
+
+      const successMessage = getApiSuccessMessage(response)
 
       if (user.value) {
         setUserProfile({
@@ -74,7 +77,7 @@ const handleEnableTwoFactor = async () => {
 
       push({
         title: t('alerts.totp_enabled_title'),
-        description: t('alerts.totp_enabled_body'),
+        description: successMessage || t('alerts.totp_enabled_body'),
         type: 'success',
       })
     },
@@ -111,7 +114,9 @@ const handleDisableTwoFactor = () => {
       }
 
       try {
-        await disableTotp({ code })
+        const response = await disableTotp({ code })
+
+        const successMessage = getApiSuccessMessage(response)
 
         if (user.value) {
           setUserProfile({
@@ -125,11 +130,11 @@ const handleDisableTwoFactor = () => {
 
         push({
           title: t('alerts.totp_disabled_title'),
-          description: t('alerts.totp_disabled_body'),
+          description: successMessage || t('alerts.totp_disabled_body'),
           type: 'success',
         })
       } catch (error: any) {
-        const codeError = error?.data?.error?.message || t('alerts.totp_invalid')
+        const codeError = getApiErrorMessage(error) || t('alerts.totp_invalid')
         push({ title: t('alerts.error_title'), description: codeError, type: 'error' })
         throw error
       }

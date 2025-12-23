@@ -65,6 +65,7 @@ import { useAlerts } from '@/composables/useAlerts'
 import { useRouter } from 'vue-router'
 import { useAuthState, type AuthSession } from '@/composables/useAuthState'
 import { useGoogleAuth } from '@/composables/useGoogleAuth'
+import { getApiErrorMessage } from '@/utils/apiMessages'
 
 definePageMeta({
   layout: 'auth',
@@ -190,12 +191,11 @@ const handleSubmit = async () => {
 
     await handleAuthResponse(response)
   } catch (error: any) {
-    const code = error?.data?.error?.code
-    const message = error?.data?.error?.message
+    const message = getApiErrorMessage(error)
 
     push({
       title: t('alerts.login_error_title'),
-      description: t('alerts.login_error_description') || message || code,
+      description: message || t('alerts.login_error_description'),
       type: 'error',
     })
   }
@@ -208,7 +208,7 @@ const handleGoogleLogin = async () => {
 
     await handleAuthResponse(response)
   } catch (error: any) {
-    const message = error?.message ?? error?.data?.error?.message ?? error?.data?.error?.code
+    const message = getApiErrorMessage(error)
 
     push({
       title: t('alerts.login_error_title'),

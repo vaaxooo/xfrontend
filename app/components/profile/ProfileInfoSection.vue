@@ -28,6 +28,7 @@ import { useAuthState } from '@/composables/useAuthState'
 import { useModal } from '@/composables/useModal'
 import { useAuthApi } from '@/composables/useAuthApi'
 import { useAlerts } from '@/composables/useAlerts'
+import { getApiSuccessMessage } from '@/utils/apiMessages'
 
 const editableProfile = ref({
   first_name: '',
@@ -65,11 +66,13 @@ const handleRequestEmailVerification = () => {
     confirmLabel: t('profile.verify_email_submit'),
     cancelLabel: t('modal.cancel'),
     onConfirm: async () => {
-      await requestEmailConfirmation({ email: editableProfile.value.email })
+      const response = await requestEmailConfirmation({ email: editableProfile.value.email })
+
+      const successMessage = getApiSuccessMessage(response)
 
       push({
         title: t('alerts.email_verification_sent_title'),
-        description: t('alerts.email_verification_sent_body'),
+        description: successMessage || t('alerts.email_verification_sent_body'),
         type: 'success',
       })
     },

@@ -119,4 +119,7 @@ export default {
     email_verification_sent_title: 'Письмо отправлено',
     email_verification_sent_body: 'Проверьте почту и перейдите по ссылке, чтобы подтвердить адрес.',
   },
+  sessions: {
+    unknown_device: 'Неизвестное устройство',
+  },
 }

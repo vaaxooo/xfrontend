@@ -49,6 +49,7 @@ import { useAuthApi } from '@/composables/useAuthApi'
 import { useI18n } from '@/composables/useI18n'
 import { useAlerts } from '@/composables/useAlerts'
 import { useRoute } from 'vue-router'
+import { getApiErrorMessage, getApiSuccessMessage } from '@/utils/apiMessages'
 
 definePageMeta({
   layout: 'auth',
@@ -101,15 +102,16 @@ const handleSubmit = async () => {
   }
 
   try {
-    await confirmPasswordReset({ email: email.value, token: token.value, password: form.password })
+    const response = await confirmPasswordReset({ email: email.value, token: token.value, password: form.password })
+    const successMessage = getApiSuccessMessage(response)
 
     push({
       title: t('auth.reset_submit'),
-      description: t('alerts.password_reset'),
+      description: successMessage || t('alerts.password_reset'),
       type: 'success',
     })
   } catch (error: any) {
-    const message = error?.error?.message || error?.message || error?.data?.error?.message || error?.data?.error?.code
+    const message = getApiErrorMessage(error)
 
     push({ title: t('alerts.error_title'), description: message || t('alerts.login_error_description'), type: 'error' })
   }

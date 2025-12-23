@@ -49,6 +49,7 @@ import { useRoute } from 'vue-router'
 import { useAlerts } from '@/composables/useAlerts'
 import { useAuthState, type AuthSession } from '@/composables/useAuthState'
 import { useRouter } from 'vue-router'
+import { getApiErrorMessage, getApiSuccessMessage } from '@/utils/apiMessages'
 
 definePageMeta({
   layout: 'auth',
@@ -145,12 +146,11 @@ const handleSubmit = async () => {
 
     otpError.value = t('alerts.login_error_description')
   } catch (error: any) {
-    const code = error?.data?.error?.code
-    const message = error?.data?.error?.message
-    otpError.value = t('alerts.totp_invalid') || message || code || ''
+    const message = getApiErrorMessage(error)
+    otpError.value = message || t('alerts.totp_invalid')
     push({
       title: t('alerts.login_error_title'),
-      description: t('alerts.login_error_description') || message || code,
+      description: message || t('alerts.login_error_description'),
       type: 'error',
     })
   }
@@ -159,8 +159,13 @@ const handleSubmit = async () => {
 const handleResend = async () => {
   if (!challengeId.value || !hasEmailStep.value) return
 
-  await resendChallengeEmail({ challenge_id: challengeId.value })
-  push({ title: t('auth.otp_resend'), description: t('auth.otp_resend_description'), type: 'info' })
+  const response = await resendChallengeEmail({ challenge_id: challengeId.value })
+  const successMessage = getApiSuccessMessage(response)
+  push({
+    title: t('auth.otp_resend'),
+    description: successMessage || t('auth.otp_resend_description'),
+    type: 'info',
+  })
 }
 
 const ensureChallengeReady = async () => {
