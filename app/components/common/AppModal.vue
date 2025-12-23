@@ -87,7 +87,7 @@ const { t } = useI18n()
 
 .modal__button {
   flex: 1;
-  min-height: 50px;
+  min-height: 48px;
 }
 
 .modal__field {
