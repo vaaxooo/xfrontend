@@ -24,7 +24,7 @@
       <div class="block-action">
         <button
           type="button"
-          class="button button--secondary"
+          class="button button--secondary button-md"
           @click="handlePasswordChange"
         >
           {{ t('security.change_password') }}
@@ -41,10 +41,12 @@ import SocialAuthBlock from '@/components/profile/security/SocialAuthBlock.vue'
 import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
 import { useAuthApi } from '@/composables/useAuthApi'
+import { useAlerts } from '@/composables/useAlerts'
 
 const { t } = useI18n()
 const { openModal, setModalErrors } = useModal()
 const { changePassword } = useAuthApi()
+const { push } = useAlerts()
 
 const getPasswordChangeErrors = (values: Record<string, string>) => {
   const errors: Record<string, string> = {}
@@ -86,6 +88,7 @@ const handlePasswordChange = () => {
         label: t('security.new_password'),
         placeholder: t('security.new_password_placeholder'),
         type: 'password',
+        description: t('security.new_password_hint'),
       },
       {
         name: 'confirm_new_password',
@@ -108,11 +111,10 @@ const handlePasswordChange = () => {
           new_password: values.new_password,
         })
 
-        openModal({
-          mode: 'alert',
-          title: t('security.change_password'),
-          description: t('alerts.password_changed'),
-          cancelLabel: t('modal.close'),
+        push({
+          title: t('alerts.password_changed'),
+          description: t('alerts.password_changed_body'),
+          type: 'success',
         })
       } catch (error) {
         const message =

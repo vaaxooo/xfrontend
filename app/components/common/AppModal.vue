@@ -36,7 +36,7 @@
           <footer v-if="modal.mode === 'dialog' || modal.confirmLabel" class="modal__footer">
             <button
               type="button"
-              class="button button--secondary center button-sm justify-content-center"
+              class="button button--secondary center button-md justify-content-center modal__button"
               @click="closeModal"
             >
               {{ modal.cancelLabel || t('modal.cancel') }}
@@ -44,7 +44,7 @@
             <button
               v-if="modal.mode === 'dialog'"
               type="button"
-              class="button button--success center button-sm justify-content-center"
+              class="button button--success center button-md justify-content-center modal__button"
               :disabled="modal.loading"
               @click="confirmModal"
             >
@@ -77,6 +77,17 @@ const { t } = useI18n()
 
 .modal__custom {
   margin: var(--s-4) 0;
+}
+
+.modal__footer {
+  display: flex;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+
+.modal__button {
+  flex: 1;
+  min-height: 48px;
 }
 
 .modal__field {
