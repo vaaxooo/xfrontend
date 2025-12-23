@@ -52,6 +52,10 @@ export default {
     edit: 'Edit',
     save: 'Save',
     cancel: 'Cancel',
+    verify_email_title: 'Confirm email',
+    verify_email_description:
+      'We will send a confirmation email to the address on your profile so you can verify it.',
+    verify_email_submit: 'Send confirmation',
   },
   security: {
     login_settings: 'Login settings',
@@ -65,6 +69,9 @@ export default {
     two_factor_setup_intro:
       'Scan the QR in your authenticator or enter the secret manually, then confirm the code.',
     enable: 'Enable',
+    disable: 'Disable',
+    two_factor_disable_confirmation:
+      'Are you sure you want to disable two-factor authentication for your account?',
     totp_placeholder: 'Code from the app',
     scan_qr: 'Scan the QR with your authenticator app',
     secret_key: 'Secret key',
@@ -89,6 +96,8 @@ export default {
     password_reset: 'Password updated. You can now sign in with the new credentials.',
     totp_enabled_title: '2FA enabled',
     totp_enabled_body: 'We saved your TOTP settings. Use codes to confirm sign-in.',
+    totp_disabled_title: '2FA disabled',
+    totp_disabled_body: 'Two-factor authentication has been turned off for your account.',
     totp_required: 'Enter the 6-digit code from your authenticator app to finish sign-in.',
     totp_invalid: 'Invalid code. Double-check and try again.',
     totp_invalid_attempts: 'Invalid code. Attempts left: {attempts}.',
@@ -100,5 +109,7 @@ export default {
     validation_email: 'Enter a valid email address.',
     validation_password_length: 'Password must be at least 8 characters.',
     otp_required: 'Enter the 6-digit code.',
+    email_verification_sent_title: 'Confirmation email sent',
+    email_verification_sent_body: 'Check your mailbox and follow the link to verify your address.',
   },
 }

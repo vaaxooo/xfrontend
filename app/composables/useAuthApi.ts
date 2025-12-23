@@ -32,6 +32,6 @@ export const useAuthApi = () => {
     linkProvider: (payload: { provider: string }) => request('/auth/link', { body: payload }),
     startTotpSetup: () => request('/auth/2fa/setup'),
     confirmTotpSetup: (payload: { code: string }) => request('/auth/2fa/confirm', { body: payload }),
-    disableTotp: (payload: { code: string }) => request('/auth/2fa/disable', { body: payload }),
+    disableTotp: (payload?: { code: string }) => request('/auth/2fa/disable', { body: payload }),
   }
 }
