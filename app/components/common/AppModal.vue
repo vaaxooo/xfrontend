@@ -27,6 +27,7 @@
                 class="input"
                 :type="field.type ?? 'text'"
                 :placeholder="field.placeholder"
+                :class="{'input--error': modal.errors[field.name]}"
               >
               <p v-if="modal.errors[field.name]" class="modal__error">{{ modal.errors[field.name] }}</p>
               <p v-if="field.description" class="modal__hint">{{ field.description }}</p>
@@ -129,9 +130,13 @@ onUnmounted(() => {
 }
 
 .modal__error {
-  color: var(--danger);
+  color: #ff4d4f;
   font-size: var(--fs-12);
   margin: 0;
+}
+
+.input--error {
+  border-color: #ff4d4f;
 }
 
 .modal__error--general {

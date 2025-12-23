@@ -36,7 +36,7 @@ const { alerts, dismiss } = useAlerts()
   z-index: 90;
   display: grid;
   gap: var(--s-2);
-  width: min(420px, calc(100% - var(--s-6)));
+  width: min(410px, calc(100% - var(--s-6)));
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -55,6 +55,7 @@ const { alerts, dismiss } = useAlerts()
   pointer-events: auto;
   position: relative;
   overflow: hidden;
+  color: #fff
 }
 
 .alert::before {
@@ -75,7 +76,7 @@ const { alerts, dismiss } = useAlerts()
 
 .alert__description {
   margin: 0;
-  color: var(--muted);
+  color: #fff;
   font-size: var(--fs-14);
 }
 
@@ -86,7 +87,7 @@ const { alerts, dismiss } = useAlerts()
   cursor: pointer;
   font-size: var(--fs-16);
   line-height: 1;
-  color: rgba(15, 23, 42, 0.7);
+  color: rgba(255, 255, 255, 0.7);
   width: 28px;
   height: 28px;
   display: grid;
@@ -102,7 +103,8 @@ const { alerts, dismiss } = useAlerts()
 }
 
 .alert--error {
-  border-color: rgba(255, 90, 95, 0.4);
+  border-color: #ff4d4f;
+  background: #ff4d4fde;
 }
 
 .alert--info {
@@ -118,7 +120,7 @@ const { alerts, dismiss } = useAlerts()
 }
 
 .alert--error::before {
-  background: #ff5a5f;
+  background: #fff;
 }
 
 .alert--info::before {

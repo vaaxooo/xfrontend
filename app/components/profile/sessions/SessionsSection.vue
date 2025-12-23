@@ -91,7 +91,7 @@ const parseUserAgent = (userAgent: string) => {
     t('sessions.unknown_device')
 
   const browserMatch = userAgent.match(/(Chrome|Safari|Firefox|Edge|Opera)\/([\d.]+)/i)
-  const browser = browserMatch ? `${browserMatch[1]} ${browserMatch[2].split('.')[0]}` : ''
+  const browser = browserMatch && browserMatch[2] ? `${browserMatch[1]} ${browserMatch[2].split('.')[0]}` : ''
 
   return {
     icon: isMobile ? '/assets/images/icons/phone.svg' : '/assets/images/icons/desktop.svg',
@@ -103,9 +103,8 @@ const toSessionView = (session: ApiSession): SessionView => {
   const device = parseUserAgent(session.user_agent || '')
 
   const details = [
-    `IP-адрес: ${session.ip}`,
+    `IP-адрес: ${session.ip} `,
     `Открыта: ${formatDate(session.created_at)}`,
-    `Истекает: ${formatDate(session.expires_at)}`,
     session.current ? 'Текущая сессия' : '',
   ]
     .filter(Boolean)
