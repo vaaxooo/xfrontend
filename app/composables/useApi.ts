@@ -24,7 +24,9 @@ export const useApi = () => {
       ...options,
       headers,
       onResponseError: async ({ response }) => {
-        if ((response.status === 401 || response.status === 403) && accessToken.value) {
+        const isMeRequest = path === '/me'
+
+        if (isMeRequest && response.status === 401 && accessToken.value) {
           clearSession()
 
           await reloadNuxtApp({ path: '/auth/login' })
