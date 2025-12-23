@@ -3,6 +3,7 @@
     :title="t('auth.login_title')"
     :description="t('auth.login_description')"
     :socials="socials"
+    @social="handleSocialClick"
   >
     <form class="auth-form" @submit.prevent="handleSubmit">
       <div class="field">
@@ -63,17 +64,19 @@ import { useModal } from '@/composables/useModal'
 import { useAlerts } from '@/composables/useAlerts'
 import { useRouter } from 'vue-router'
 import { useAuthState, type AuthSession } from '@/composables/useAuthState'
+import { useGoogleAuth } from '@/composables/useGoogleAuth'
 
 definePageMeta({
   layout: 'auth',
 })
 
 const { t } = useI18n()
-const { login, getMe } = useAuthApi()
+const { login, getMe, googleLogin } = useAuthApi()
 const { openModal } = useModal()
 const { push } = useAlerts()
 const router = useRouter()
 const { setSession, setUserProfile } = useAuthState()
+const { promptGoogleIdToken } = useGoogleAuth()
 
 const form = reactive({
   email: '',
@@ -92,6 +95,20 @@ const socials = [
   { id: 'google', label: 'Google', icon: '/assets/images/icons/google.svg' },
   { id: 'apple', label: 'Apple', icon: '/assets/images/icons/apple.svg' },
 ]
+
+const isChallengeRequired = (value: any): value is { status: string; required_steps?: string[] } => {
+  return value && typeof value === 'object' && 'status' in value && (value as any).status === 'challenge_required'
+}
+
+const isAuthSessionResponse = (value: any): value is AuthSession => {
+  return (
+    value &&
+    typeof value === 'object' &&
+    'access_token' in value &&
+    'refresh_token' in value &&
+    Boolean((value as any).access_token)
+  )
+}
 
 const validate = () => {
   errors.email = ''
@@ -115,55 +132,63 @@ const fetchProfile = async () => {
   setUserProfile(profile as any)
 }
 
+const completeAuthentication = async (session: AuthSession) => {
+  setSession(session)
+
+  await fetchProfile()
+
+  openModal({
+    mode: 'alert',
+    title: t('auth.login_title'),
+    description: t('alerts.login_success'),
+    cancelLabel: t('modal.close'),
+  })
+
+  await router.push('/')
+}
+
+const handleAuthResponse = async (response: any) => {
+  if (isChallengeRequired(response)) {
+    const requiredSteps = response.required_steps as string[] | undefined
+    const hasEmailStep = requiredSteps?.includes('email_verification')
+    const hasTotp = requiredSteps?.includes('totp')
+
+    push({
+      title: hasEmailStep ? t('auth.email_verification_title') : t('auth.otp_title'),
+      description: hasEmailStep
+        ? t('auth.email_verification_description')
+        : t('alerts.totp_required'),
+      type: 'info',
+    })
+
+    const target = hasEmailStep ? '/auth/verify-email' : '/auth/otp'
+
+    await router.push({
+      path: target,
+      query: {
+        challenge_id: (response as any).challenge_id,
+        masked_email: hasEmailStep ? (response as any).masked_email : undefined,
+        required_steps: response.required_steps?.join(',') ?? (hasTotp ? 'totp' : ''),
+      },
+    })
+    return
+  }
+
+  if (isAuthSessionResponse(response)) {
+    await completeAuthentication(response)
+    return
+  }
+
+  push({ title: t('alerts.login_error_title'), description: t('alerts.login_error_description'), type: 'error' })
+}
+
 const handleSubmit = async () => {
   if (!validate()) return
 
   try {
     const response = await login({ email: form.email, password: form.password })
 
-    if (response && typeof response === 'object' && 'status' in response && response.status === 'challenge_required') {
-      const requiredSteps = (response as any).required_steps as string[] | undefined
-      const hasEmailStep = requiredSteps?.includes('email_verification')
-      const hasTotp = requiredSteps?.includes('totp')
-
-      push({
-        title: hasEmailStep ? t('auth.email_verification_title') : t('auth.otp_title'),
-        description: hasEmailStep
-          ? t('auth.email_verification_description')
-          : t('alerts.totp_required'),
-        type: 'info',
-      })
-
-      const target = hasEmailStep ? '/auth/verify-email' : '/auth/otp'
-
-      await router.push({
-        path: target,
-        query: {
-          challenge_id: (response as any).challenge_id,
-          masked_email: hasEmailStep ? (response as any).masked_email : undefined,
-          required_steps: (response as any).required_steps?.join(',') ?? (hasTotp ? 'totp' : ''),
-        },
-      })
-      return
-    }
-
-    if (response && typeof response === 'object' && 'access_token' in response && 'refresh_token' in response) {
-      setSession(response as AuthSession)
-
-      await fetchProfile()
-
-      openModal({
-        mode: 'alert',
-        title: t('auth.login_title'),
-        description: t('alerts.login_success'),
-        cancelLabel: t('modal.close'),
-      })
-
-      await router.push('/')
-      return
-    }
-
-    push({ title: t('alerts.login_error_title'), description: t('alerts.login_error_description'), type: 'error' })
+    await handleAuthResponse(response)
   } catch (error: any) {
     const code = error?.data?.error?.code
     const message = error?.data?.error?.message
@@ -173,6 +198,29 @@ const handleSubmit = async () => {
       description: t('alerts.login_error_description') || message || code,
       type: 'error',
     })
+  }
+}
+
+const handleGoogleLogin = async () => {
+  try {
+    const idToken = await promptGoogleIdToken()
+    const response = await googleLogin({ id_token: idToken })
+
+    await handleAuthResponse(response)
+  } catch (error: any) {
+    const message = error?.message ?? error?.data?.error?.message ?? error?.data?.error?.code
+
+    push({
+      title: t('alerts.login_error_title'),
+      description: message || t('alerts.login_error_description'),
+      type: 'error',
+    })
+  }
+}
+
+const handleSocialClick = async (providerId: string) => {
+  if (providerId === 'google') {
+    await handleGoogleLogin()
   }
 }
 </script>

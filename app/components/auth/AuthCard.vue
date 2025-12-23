@@ -19,6 +19,7 @@
             :key="social.id"
             href="#"
             class="button button--secondary button-social center justify-content-center"
+            @click.prevent="emit('social', social.id)"
           >
             <img :src="social.icon" :alt="social.label" class="w-32 h-32">
           </a>
@@ -44,6 +45,8 @@ const props = withDefaults(
     socials: () => [],
   },
 )
+
+const emit = defineEmits<{ (e: 'social', id: string): void }>()
 
 const { t } = useI18n()
 

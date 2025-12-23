@@ -15,6 +15,7 @@ export const useAuthApi = () => {
       request('/auth/confirm/request', { body: payload }),
     confirmEmail: (payload: { email: string; code: string }) =>
       request('/auth/confirm', { body: payload }),
+    googleLogin: (payload: { id_token: string }) => request('/auth/google', { body: payload }),
     challengeStatus: (payload: { challenge_id: string }) =>
       request('/auth/challenge/status', { body: payload }),
     verifyChallengeTotp: (payload: { challenge_id: string; otp_code: string }) =>

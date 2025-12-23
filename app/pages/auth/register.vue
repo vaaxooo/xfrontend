@@ -3,6 +3,7 @@
     :title="t('auth.register_title')"
     :description="t('auth.register_description')"
     :socials="socials"
+    @social="handleSocialClick"
   >
     <form class="auth-form" @submit.prevent="handleSubmit">
       <div class="field">
@@ -64,17 +65,19 @@ import { useModal } from '@/composables/useModal'
 import { useAuthState, type AuthSession } from '@/composables/useAuthState'
 import { useRouter } from 'vue-router'
 import { useAlerts } from '@/composables/useAlerts'
+import { useGoogleAuth } from '@/composables/useGoogleAuth'
 
 definePageMeta({
   layout: 'auth',
 })
 
 const { t } = useI18n()
-const { register, requestEmailConfirmation, getMe } = useAuthApi()
+const { register, requestEmailConfirmation, getMe, googleLogin } = useAuthApi()
 const { openModal } = useModal()
 const router = useRouter()
 const { setSession, setUserProfile } = useAuthState()
 const { push } = useAlerts()
+const { promptGoogleIdToken } = useGoogleAuth()
 
 const form = reactive({
   email: '',
@@ -140,6 +143,20 @@ const fetchProfile = async () => {
   setUserProfile(profile as any)
 }
 
+const completeAuthentication = async (session: AuthSession) => {
+  setSession(session)
+  await fetchProfile()
+
+  openModal({
+    mode: 'alert',
+    title: t('auth.register_title'),
+    description: t('alerts.login_success'),
+    cancelLabel: t('modal.close'),
+  })
+
+  await router.push('/')
+}
+
 const handleSubmit = async () => {
   if (!validate()) return
 
@@ -147,17 +164,7 @@ const handleSubmit = async () => {
     const response = await register({ ...form })
 
     if (isAuthSessionResponse(response)) {
-      setSession(response)
-      await fetchProfile()
-
-      openModal({
-        mode: 'alert',
-        title: t('auth.register_title'),
-        description: t('alerts.login_success'),
-        cancelLabel: t('modal.close'),
-      })
-
-      await router.push('/')
+      await completeAuthentication(response)
       return
     }
 
@@ -197,6 +204,34 @@ const handleSubmit = async () => {
       description: t('alerts.login_error_description') || message || code,
       type: 'error',
     })
+  }
+}
+
+const handleGoogleLogin = async () => {
+  try {
+    const idToken = await promptGoogleIdToken()
+    const response = await googleLogin({ id_token: idToken })
+
+    if (isAuthSessionResponse(response)) {
+      await completeAuthentication(response)
+      return
+    }
+
+    push({ title: t('alerts.error_title'), description: t('alerts.login_error_description'), type: 'error' })
+  } catch (error: any) {
+    const message = error?.message ?? error?.data?.error?.message ?? error?.data?.error?.code
+
+    push({
+      title: t('alerts.error_title'),
+      description: message || t('alerts.login_error_description'),
+      type: 'error',
+    })
+  }
+}
+
+const handleSocialClick = async (providerId: string) => {
+  if (providerId === 'google') {
+    await handleGoogleLogin()
   }
 }
 </script>
