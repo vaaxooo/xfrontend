@@ -34,7 +34,7 @@
           <footer v-if="modal.mode === 'dialog' || modal.confirmLabel" class="modal__footer">
             <button
               type="button"
-              class="button button--secondary"
+              class="button button--secondary center button-sm justify-content-center"
               @click="closeModal"
             >
               {{ modal.cancelLabel || t('modal.cancel') }}
@@ -42,7 +42,7 @@
             <button
               v-if="modal.mode === 'dialog'"
               type="button"
-              class="button button--success"
+              class="button button--success center button-sm justify-content-center"
               :disabled="modal.loading"
               @click="confirmModal"
             >
