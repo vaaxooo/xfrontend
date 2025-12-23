@@ -18,6 +18,7 @@
           />
 
           <div v-if="modal.fields.length" class="modal__form">
+            <p v-if="modal.errors.form" class="modal__error modal__error--general">{{ modal.errors.form }}</p>
             <label v-for="field in modal.fields" :key="field.name" class="modal__field">
               <span v-if="field.label" class="modal__label">{{ field.label }}</span>
               <input
@@ -27,6 +28,7 @@
                 :type="field.type ?? 'text'"
                 :placeholder="field.placeholder"
               >
+              <p v-if="modal.errors[field.name]" class="modal__error">{{ modal.errors[field.name] }}</p>
               <p v-if="field.description" class="modal__hint">{{ field.description }}</p>
             </label>
           </div>
@@ -84,6 +86,16 @@ const { t } = useI18n()
 
 .modal__label {
   font-weight: 600;
+}
+
+.modal__error {
+  color: var(--danger);
+  font-size: var(--fs-12);
+  margin: 0;
+}
+
+.modal__error--general {
+  font-size: var(--fs-14);
 }
 
 .modal__hint {
