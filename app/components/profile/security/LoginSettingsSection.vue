@@ -41,10 +41,34 @@ import SocialAuthBlock from '@/components/profile/security/SocialAuthBlock.vue'
 import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
 import { useAuthApi } from '@/composables/useAuthApi'
+import { useAlerts } from '@/composables/useAlerts'
 
 const { t } = useI18n()
-const { openModal } = useModal()
-const { requestPasswordReset } = useAuthApi()
+const { openModal, setModalErrors } = useModal()
+const { changePassword } = useAuthApi()
+const { push } = useAlerts()
+
+const getPasswordChangeErrors = (values: Record<string, string>) => {
+  const errors: Record<string, string> = {}
+
+  if (!values.current_password) {
+    errors.current_password = t('alerts.validation_required')
+  }
+
+  if (!values.new_password) {
+    errors.new_password = t('alerts.validation_required')
+  } else if (values.new_password.length < 8) {
+    errors.new_password = t('alerts.validation_password_length')
+  }
+
+  if (!values.confirm_new_password) {
+    errors.confirm_new_password = t('alerts.validation_required')
+  } else if (values.confirm_new_password !== values.new_password) {
+    errors.confirm_new_password = t('alerts.password_mismatch')
+  }
+
+  return errors
+}
 
 const handlePasswordChange = () => {
   openModal({
@@ -54,31 +78,57 @@ const handlePasswordChange = () => {
     cancelLabel: t('modal.cancel'),
     fields: [
       {
-        name: 'email',
-        label: t('profile.email'),
-        placeholder: 'you@example.com',
-        type: 'email',
+        name: 'current_password',
+        label: t('security.current_password'),
+        placeholder: t('security.current_password_placeholder'),
+        type: 'password',
+      },
+      {
+        name: 'new_password',
+        label: t('security.new_password'),
+        placeholder: t('security.new_password_placeholder'),
+        type: 'password',
+        description: t('security.new_password_hint'),
+      },
+      {
+        name: 'confirm_new_password',
+        label: t('security.confirm_new_password'),
+        placeholder: t('security.confirm_new_password_placeholder'),
+        type: 'password',
       },
     ],
     onConfirm: async (values) => {
-      if (values.email) {
-        await requestPasswordReset({ email: values.email })
-      } else {
-        openModal({
-          mode: 'alert',
-          title: t('alerts.error_title'),
-          description: t('alerts.invalid_email'),
-          cancelLabel: t('modal.close'),
-      })
-    }
+      const errors = getPasswordChangeErrors(values)
 
-    openModal({
-      mode: 'alert',
-      title: t('alerts.recovery_sent_title'),
-      description: t('alerts.recovery_sent_body'),
-      cancelLabel: t('modal.close'),
-    })
-  },
-})
+      if (Object.keys(errors).length) {
+        setModalErrors(errors)
+        throw new Error('Validation failed')
+      }
+
+      try {
+        await changePassword({
+          current_password: values.current_password,
+          new_password: values.new_password,
+        })
+
+        push({
+          title: t('alerts.password_changed'),
+          description: t('alerts.password_changed_body'),
+          type: 'success',
+        })
+      } catch (error) {
+        const message =
+          typeof error === 'object' && error && 'message' in error
+            ? (error as { message?: string }).message
+            : undefined
+
+        setModalErrors({
+          form: message || t('alerts.error_title'),
+        })
+
+        throw error
+      }
+    },
+  })
 }
 </script>

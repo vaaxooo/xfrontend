@@ -18,6 +18,7 @@
           />
 
           <div v-if="modal.fields.length" class="modal__form">
+            <p v-if="modal.errors.form" class="modal__error modal__error--general">{{ modal.errors.form }}</p>
             <label v-for="field in modal.fields" :key="field.name" class="modal__field">
               <span v-if="field.label" class="modal__label">{{ field.label }}</span>
               <input
@@ -27,6 +28,7 @@
                 :type="field.type ?? 'text'"
                 :placeholder="field.placeholder"
               >
+              <p v-if="modal.errors[field.name]" class="modal__error">{{ modal.errors[field.name] }}</p>
               <p v-if="field.description" class="modal__hint">{{ field.description }}</p>
             </label>
           </div>
@@ -34,7 +36,7 @@
           <footer v-if="modal.mode === 'dialog' || modal.confirmLabel" class="modal__footer">
             <button
               type="button"
-              class="button button--secondary center button-sm justify-content-center"
+              class="button button--secondary center button-md justify-content-center modal__button"
               @click="closeModal"
             >
               {{ modal.cancelLabel || t('modal.cancel') }}
@@ -42,7 +44,7 @@
             <button
               v-if="modal.mode === 'dialog'"
               type="button"
-              class="button button--success center button-sm justify-content-center"
+              class="button button--success center button-md justify-content-center modal__button"
               :disabled="modal.loading"
               @click="confirmModal"
             >
@@ -77,6 +79,17 @@ const { t } = useI18n()
   margin: var(--s-4) 0;
 }
 
+.modal__footer {
+  display: flex;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+
+.modal__button {
+  flex: 1;
+  min-height: 50px;
+}
+
 .modal__field {
   display: grid;
   gap: var(--s-2);
@@ -84,6 +97,16 @@ const { t } = useI18n()
 
 .modal__label {
   font-weight: 600;
+}
+
+.modal__error {
+  color: var(--danger);
+  font-size: var(--fs-12);
+  margin: 0;
+}
+
+.modal__error--general {
+  font-size: var(--fs-14);
 }
 
 .modal__hint {

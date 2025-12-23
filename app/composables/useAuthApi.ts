@@ -28,6 +28,8 @@ export const useAuthApi = () => {
       request('/auth/password/reset', { body: payload }),
     confirmPasswordReset: (payload: { email: string; token: string; password: string }) =>
       request('/auth/password/confirm', { body: payload }),
+    changePassword: (payload: { current_password: string; new_password: string }) =>
+      request('/auth/password/change', { body: payload }),
     telegramLogin: (payload: Record<string, unknown>) =>
       request('/auth/telegram', { body: payload }),
     linkProvider: (payload: { provider: string }) => request('/auth/link', { body: payload }),

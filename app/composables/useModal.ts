@@ -32,6 +32,7 @@ type ModalState = Omit<Required<Omit<ModalOptions, 'onConfirm'>>, 'component' | 
   loading: boolean
   onConfirm?: (values: Record<string, string>) => Awaitable<void>
   values: Record<string, string>
+  errors: Record<string, string>
   id: number
 }
 
@@ -53,6 +54,7 @@ export const useModal = () => {
     component: undefined,
     componentProps: undefined,
     values: {},
+    errors: {},
     mode: 'dialog',
     id: 0,
   }))
@@ -62,6 +64,7 @@ export const useModal = () => {
       ...modal.value,
       ...options,
       values: buildFieldValues(options.fields),
+      errors: {},
       isOpen: true,
       loading: false,
       mode: options.mode ?? 'dialog',
@@ -75,6 +78,7 @@ export const useModal = () => {
     modal.value.onConfirm = undefined
     modal.value.fields = []
     modal.value.values = {}
+    modal.value.errors = {}
     modal.value.component = undefined
     modal.value.componentProps = undefined
   }
@@ -87,6 +91,7 @@ export const useModal = () => {
 
     const currentModalId = modal.value.id
     modal.value.loading = true
+    modal.value.errors = {}
 
     try {
       await modal.value.onConfirm({ ...modal.value.values })
@@ -104,11 +109,16 @@ export const useModal = () => {
     modal.value.values[name] = value
   }
 
+  const setModalErrors = (errors: Record<string, string>) => {
+    modal.value.errors = errors
+  }
+
   return {
     modal,
     openModal,
     closeModal,
     confirmModal,
     updateField,
+    setModalErrors,
   }
 }
