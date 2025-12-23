@@ -26,13 +26,15 @@
         class="button button--secondary"
         @click="$emit('end-session', sessionId)"
       >
-        Завершить сеанс
+        {{ t('sessions.terminate_one') }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '@/composables/useI18n'
+
 defineProps({
   sessionId: {
     type: String,
@@ -57,4 +59,6 @@ defineProps({
 })
 
 defineEmits<{ (e: 'end-session', sessionId: string): void }>()
+
+const { t } = useI18n()
 </script>
