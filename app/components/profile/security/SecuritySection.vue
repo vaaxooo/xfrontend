@@ -89,7 +89,7 @@ const handleEnableTwoFactor = async () => {
     component: TwoFactorSetupContent,
     componentProps: {
       secret: (enrollment as any)?.secret,
-      otpauthUri: (enrollment as any)?.otpauth_uri,
+      otpauthUri: (enrollment as any)?.uri,
       qr: (enrollment as any)?.qr,
     },
   })

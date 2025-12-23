@@ -66,7 +66,7 @@ const buildQr = (uri?: string) => (uri ? `https://quickchart.io/qr?text=${encode
 }
 
 .twofa__hint {
-  font-size: var(--fs-12);
+  font-size: var(--fs-14);
   color: var(--muted);
 }
 
@@ -78,12 +78,12 @@ const buildQr = (uri?: string) => (uri ? `https://quickchart.io/qr?text=${encode
 .twofa__item {
   background: var(--muted-50);
   border-radius: var(--radius-md);
-  padding: var(--s-2) var(--s-3);
+  padding: var(--s-2) var(--s-0);
 }
 
 .twofa__label {
   display: block;
-  font-size: var(--fs-12);
+  font-size: var(--fs-14);
   color: var(--muted);
   margin-bottom: var(--s-1);
 }
