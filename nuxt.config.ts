@@ -18,8 +18,8 @@ export default defineNuxtConfig({
                                 googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID || '',
                                 googleRedirectUri:
                                         process.env.NUXT_PUBLIC_GOOGLE_REDIRECT_URI ||
-                                        'http://localhost:3000/auth/google/callback',
-                                googleOrigin: process.env.NUXT_PUBLIC_GOOGLE_ORIGIN || 'http://localhost:3000'
+                                        'http://localtest.me:3000/auth/google/callback',
+                                googleOrigin: process.env.NUXT_PUBLIC_GOOGLE_ORIGIN || 'http://localtest.me:3000'
                         }
         },
 
