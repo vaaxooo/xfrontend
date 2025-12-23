@@ -15,7 +15,11 @@ export default defineNuxtConfig({
         runtimeConfig: {
                         public: {
                                 apiBase: 'http://localhost:8080/api/v1',
-                                googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID || ''
+                                googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+                                googleRedirectUri:
+                                        process.env.NUXT_PUBLIC_GOOGLE_REDIRECT_URI ||
+                                        'http://localtest.me:3000/auth/google/callback',
+                                googleOrigin: process.env.NUXT_PUBLIC_GOOGLE_ORIGIN || 'http://localtest.me:3000'
                         }
         },
 

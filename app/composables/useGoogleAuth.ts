@@ -45,6 +45,9 @@ export const useGoogleAuth = () => {
     }
 
     const clientId = config.public?.googleClientId
+    const allowedOrigin = config.public?.googleOrigin || window.location.origin
+    const loginUri =
+      config.public?.googleRedirectUri || `${allowedOrigin.replace(/\/$/, '')}/auth/google/callback`
 
     if (!clientId) {
       throw new Error('Google client ID is not configured')
@@ -78,6 +81,8 @@ export const useGoogleAuth = () => {
       google.accounts.id.initialize({
         client_id: clientId,
         callback: (response: { credential?: string }) => callback(response.credential ?? ''),
+        login_uri: loginUri,
+        allowed_parent_origins: [allowedOrigin],
         ux_mode: 'popup',
       })
 
