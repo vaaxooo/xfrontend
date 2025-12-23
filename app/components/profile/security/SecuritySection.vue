@@ -101,14 +101,6 @@ const handleDisableTwoFactor = () => {
     description: t('security.two_factor_disable_confirmation'),
     confirmLabel: t('security.disable'),
     cancelLabel: t('modal.cancel'),
-    fields: [
-      {
-        name: 'code',
-        label: t('security.disable_code_label'),
-        placeholder: '123456',
-        type: 'text',
-      },
-    ],
     component: DisableTwoFactorOtp,
     onConfirm: async (values) => {
       const code = (values.code ?? '').trim()

@@ -26,7 +26,7 @@ export const useAuthApi = () => {
       request('/auth/challenge/confirm-email', { body: payload }),
     requestPasswordReset: (payload: { email: string }) =>
       request('/auth/password/reset', { body: payload }),
-    confirmPasswordReset: (payload: { email: string; code: string; password: string }) =>
+    confirmPasswordReset: (payload: { email: string; token: string; password: string }) =>
       request('/auth/password/confirm', { body: payload }),
     telegramLogin: (payload: Record<string, unknown>) =>
       request('/auth/telegram', { body: payload }),

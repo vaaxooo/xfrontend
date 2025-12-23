@@ -99,6 +99,7 @@ export default {
     totp_invalid: 'Неверный код. Проверьте и попробуйте ещё раз.',
     totp_invalid_attempts: 'Неверный код. Осталось попыток: {attempts}.',
     password_mismatch: 'Пароли должны совпадать.',
+    reset_link_invalid: 'Ссылка для сброса пароля недействительна. Запросите новую.',
     error_title: 'Что-то пошло не так',
     invalid_email: 'Введите корректный email.',
     conflict_error: 'Этот email уже зарегистрирован. Попробуйте войти.',

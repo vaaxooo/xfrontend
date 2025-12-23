@@ -103,6 +103,7 @@ export default {
     totp_invalid: 'Invalid code. Double-check and try again.',
     totp_invalid_attempts: 'Invalid code. Attempts left: {attempts}.',
     password_mismatch: 'Passwords must match.',
+    reset_link_invalid: 'The password reset link is invalid. Please request a new one.',
     error_title: 'Something went wrong',
     invalid_email: 'Please provide a valid email address.',
     conflict_error: 'This email is already registered. Try signing in.',

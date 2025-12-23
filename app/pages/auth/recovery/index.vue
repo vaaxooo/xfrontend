@@ -90,12 +90,22 @@ const validate = () => {
 const handleSubmit = async () => {
   if (!validate()) return
 
-  await requestPasswordReset({ email: email.value })
-  push({
-    title: t('alerts.recovery_sent_title'),
-    description: t('alerts.recovery_sent_body'),
-    type: 'info',
-  })
+  try {
+    await requestPasswordReset({ email: email.value })
+    push({
+      title: t('alerts.recovery_sent_title'),
+      description: t('alerts.recovery_sent_body'),
+      type: 'info',
+    })
+  } catch (error: any) {
+    const message = error?.error?.message || error?.message || error?.data?.error?.message || error?.data?.error?.code
+
+    push({
+      title: t('alerts.error_title'),
+      description: message || t('alerts.login_error_description'),
+      type: 'error',
+    })
+  }
 }
 
 const fetchProfile = async () => {

@@ -4,27 +4,7 @@
     :description="t('auth.reset_description')"
   >
     <form class="auth-form" @submit.prevent="handleSubmit">
-      <div class="field">
-        <input
-          v-model="form.email"
-          type="email"
-          :placeholder="t('auth.email_placeholder')"
-          class="input"
-          :class="{ 'input--error': errors.email }"
-        >
-        <p v-if="errors.email" class="input-error">{{ errors.email }}</p>
-      </div>
-
-      <div class="field">
-        <input
-          v-model="form.code"
-          type="text"
-          :placeholder="t('auth.reset_code_placeholder')"
-          class="input"
-          :class="{ 'input--error': errors.code }"
-        >
-        <p v-if="errors.code" class="input-error">{{ errors.code }}</p>
-      </div>
+      <p v-if="!hasRequiredParams" class="input-error">{{ t('alerts.reset_link_invalid') }}</p>
 
       <div class="field">
         <input
@@ -49,7 +29,11 @@
       </div>
 
       <div class="auth-actions">
-        <button type="submit" class="button button--auth w-full center button-md">
+        <button
+          type="submit"
+          class="button button--auth w-full center button-md"
+          :disabled="!hasRequiredParams"
+        >
           {{ t('auth.reset_submit') }}
           <img src="/assets/images/icons/arrow-right-white.svg" alt="arrow" class="w-24 h-24">
         </button>
@@ -59,11 +43,12 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import AuthCard from '@/components/auth/AuthCard.vue'
 import { useAuthApi } from '@/composables/useAuthApi'
 import { useI18n } from '@/composables/useI18n'
 import { useAlerts } from '@/composables/useAlerts'
+import { useRoute } from 'vue-router'
 
 definePageMeta({
   layout: 'auth',
@@ -72,36 +57,25 @@ definePageMeta({
 const { t } = useI18n()
 const { confirmPasswordReset } = useAuthApi()
 const { push } = useAlerts()
+const route = useRoute()
 
 const form = reactive({
-  email: '',
-  code: '',
   password: '',
   confirmPassword: '',
 })
 
 const errors = reactive({
-  email: '',
-  code: '',
   password: '',
   confirmPassword: '',
 })
 
+const email = computed(() => (route.query.email as string) || '')
+const token = computed(() => (route.query.token as string) || '')
+const hasRequiredParams = computed(() => Boolean(email.value && token.value))
+
 const validate = () => {
-  errors.email = ''
-  errors.code = ''
   errors.password = ''
   errors.confirmPassword = ''
-
-  if (!form.email) {
-    errors.email = t('alerts.validation_required')
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    errors.email = t('alerts.validation_email')
-  }
-
-  if (!form.code) {
-    errors.code = t('alerts.validation_required')
-  }
 
   if (!form.password) {
     errors.password = t('alerts.validation_required')
@@ -115,19 +89,30 @@ const validate = () => {
     errors.confirmPassword = t('alerts.password_mismatch')
   }
 
-  return !errors.email && !errors.code && !errors.password && !errors.confirmPassword
+  return !errors.password && !errors.confirmPassword
 }
 
 const handleSubmit = async () => {
   if (!validate()) return
 
-  await confirmPasswordReset({ email: form.email, code: form.code, password: form.password })
+  if (!hasRequiredParams.value) {
+    push({ title: t('alerts.error_title'), description: t('alerts.reset_link_invalid'), type: 'error' })
+    return
+  }
 
-  push({
-    title: t('auth.reset_submit'),
-    description: t('alerts.password_reset'),
-    type: 'success',
-  })
+  try {
+    await confirmPasswordReset({ email: email.value, token: token.value, password: form.password })
+
+    push({
+      title: t('auth.reset_submit'),
+      description: t('alerts.password_reset'),
+      type: 'success',
+    })
+  } catch (error: any) {
+    const message = error?.error?.message || error?.message || error?.data?.error?.message || error?.data?.error?.code
+
+    push({ title: t('alerts.error_title'), description: message || t('alerts.login_error_description'), type: 'error' })
+  }
 }
 </script>
 
