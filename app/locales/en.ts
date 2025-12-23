@@ -72,6 +72,7 @@ export default {
     disable: 'Disable',
     two_factor_disable_confirmation:
       'Are you sure you want to disable two-factor authentication for your account?',
+    disable_code_label: 'Enter the 6-digit code to disable 2FA',
     totp_placeholder: 'Code from the app',
     scan_qr: 'Scan the QR with your authenticator app',
     secret_key: 'Secret key',

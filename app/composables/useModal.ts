@@ -90,9 +90,12 @@ export const useModal = () => {
 
     try {
       await modal.value.onConfirm({ ...modal.value.values })
-    } finally {
       if (modal.value.id === currentModalId) {
         closeModal()
+      }
+    } catch (error) {
+      if (modal.value.id === currentModalId) {
+        modal.value.loading = false
       }
     }
   }

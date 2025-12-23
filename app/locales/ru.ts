@@ -68,6 +68,7 @@ export default {
     enable: 'Включить',
     disable: 'Отключить',
     two_factor_disable_confirmation: 'Вы уверены, что хотите отключить двухфакторную аутентификацию?',
+    disable_code_label: 'Введите 6-значный код для отключения 2FA',
     totp_placeholder: 'Код из приложения',
     scan_qr: 'Сканируйте QR в приложении-аутентификаторе',
     secret_key: 'Секретный ключ',

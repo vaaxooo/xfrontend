@@ -36,6 +36,7 @@ import { useI18n } from '@/composables/useI18n'
 import { useModal } from '@/composables/useModal'
 import { useAuthApi } from '@/composables/useAuthApi'
 import TwoFactorSetupContent from '@/components/profile/security/TwoFactorSetupContent.vue'
+import DisableTwoFactorOtp from '@/components/profile/security/DisableTwoFactorOtp.vue'
 import { useAlerts } from '@/composables/useAlerts'
 import { computed } from 'vue'
 import { useAuthState } from '@/composables/useAuthState'
@@ -100,24 +101,46 @@ const handleDisableTwoFactor = () => {
     description: t('security.two_factor_disable_confirmation'),
     confirmLabel: t('security.disable'),
     cancelLabel: t('modal.cancel'),
-    onConfirm: async () => {
-      await disableTotp()
+    fields: [
+      {
+        name: 'code',
+        label: t('security.disable_code_label'),
+        placeholder: '123456',
+        type: 'text',
+      },
+    ],
+    component: DisableTwoFactorOtp,
+    onConfirm: async (values) => {
+      const code = (values.code ?? '').trim()
 
-      if (user.value) {
-        setUserProfile({
-          ...user.value,
-          login_settings: {
-            ...(user.value.login_settings ?? {}),
-            two_factor_enabled: false,
-          },
-        })
+      if (code.length !== 6) {
+        push({ title: t('alerts.error_title'), description: t('alerts.totp_required'), type: 'warning' })
+        throw new Error('otp_required')
       }
 
-      push({
-        title: t('alerts.totp_disabled_title'),
-        description: t('alerts.totp_disabled_body'),
-        type: 'success',
-      })
+      try {
+        await disableTotp({ code })
+
+        if (user.value) {
+          setUserProfile({
+            ...user.value,
+            login_settings: {
+              ...(user.value.login_settings ?? {}),
+              two_factor_enabled: false,
+            },
+          })
+        }
+
+        push({
+          title: t('alerts.totp_disabled_title'),
+          description: t('alerts.totp_disabled_body'),
+          type: 'success',
+        })
+      } catch (error: any) {
+        const codeError = error?.data?.error?.message || t('alerts.totp_invalid')
+        push({ title: t('alerts.error_title'), description: codeError, type: 'error' })
+        throw error
+      }
     },
   })
 }
