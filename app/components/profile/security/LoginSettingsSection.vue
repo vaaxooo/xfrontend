@@ -123,7 +123,7 @@ const handlePasswordChange = () => {
         const message = getApiErrorMessage(error, t)
 
         setModalErrors({
-          form: t('alerts.error_title') || message,
+          form: t('alerts.error_title') ?? message ?? '',
         })
 
         throw error

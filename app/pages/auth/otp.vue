@@ -147,7 +147,7 @@ const handleSubmit = async () => {
     otpError.value = t('alerts.login_error_description')
   } catch (error: any) {
     const message = getApiErrorMessage(error, t)
-    otpError.value = t('alerts.totp_invalid') || message
+    otpError.value = t('alerts.totp_invalid') ?? message ?? ''
     push({
       title: t('alerts.login_error_title'),
       description: t('alerts.login_error_description') || message,

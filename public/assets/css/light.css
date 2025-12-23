@@ -217,6 +217,8 @@ img {
     background-color: #fff;
     border: 1px solid rgba(118, 152, 187, 0.18);
     color: #000;
+    background: rgba(59, 130, 246, 0.08);
+    border-radius: 10px;
 }
 
 .menu__link.is-active::before {
@@ -340,6 +342,7 @@ p {
 
 .table-section__row:hover {
     background: #f7f9fb;
+    cursor: pointer;
 }
 
 .table-section__row:not(:last-child)::after {
