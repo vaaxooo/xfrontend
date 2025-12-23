@@ -35,24 +35,38 @@ const { alerts, dismiss } = useAlerts()
   bottom: var(--s-4);
   z-index: 90;
   display: grid;
-  gap: var(--s-3);
+  gap: var(--s-2);
   width: min(420px, calc(100% - var(--s-6)));
   transform: translateX(-50%);
   pointer-events: none;
 }
 
 .alert {
-  background: rgba(255, 255, 255, 0.98);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.86);
+  border-radius: 22px;
   padding: var(--s-3) var(--s-4);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.14);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--s-3);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(18px);
   pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.alert::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 60%;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.15);
 }
 
 .alert__title {
@@ -67,27 +81,48 @@ const { alerts, dismiss } = useAlerts()
 
 .alert__close {
   border: none;
-  background: transparent;
+  background: rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
   cursor: pointer;
   font-size: var(--fs-16);
   line-height: 1;
-  color: var(--muted);
+  color: rgba(15, 23, 42, 0.7);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
 }
 
 .alert--success {
-  border-color: #3dd598;
+  border-color: rgba(61, 213, 152, 0.4);
 }
 
 .alert--warning {
-  border-color: #ffb020;
+  border-color: rgba(255, 176, 32, 0.4);
 }
 
 .alert--error {
-  border-color: #ff5a5f;
+  border-color: rgba(255, 90, 95, 0.4);
 }
 
 .alert--info {
-  border-color: #2f80ed;
+  border-color: rgba(47, 128, 237, 0.4);
+}
+
+.alert--success::before {
+  background: #3dd598;
+}
+
+.alert--warning::before {
+  background: #ffb020;
+}
+
+.alert--error::before {
+  background: #ff5a5f;
+}
+
+.alert--info::before {
+  background: #2f80ed;
 }
 
 .slide-fade-enter-active,

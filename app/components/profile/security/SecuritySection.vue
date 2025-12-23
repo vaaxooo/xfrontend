@@ -134,7 +134,7 @@ const handleDisableTwoFactor = () => {
           type: 'success',
         })
       } catch (error: any) {
-        const codeError = getApiErrorMessage(error) || t('alerts.totp_invalid')
+        const codeError = getApiErrorMessage(error, t) || t('alerts.totp_invalid')
         push({ title: t('alerts.error_title'), description: codeError, type: 'error' })
         throw error
       }

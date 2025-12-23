@@ -199,7 +199,7 @@ const handleSubmit = async () => {
       return
     }
 
-    const message = getApiErrorMessage(error)
+    const message = getApiErrorMessage(error, t)
     push({
       title: t('alerts.error_title'),
       description: message || t('alerts.login_error_description'),
@@ -220,7 +220,7 @@ const handleGoogleLogin = async () => {
 
     push({ title: t('alerts.error_title'), description: t('alerts.login_error_description'), type: 'error' })
   } catch (error: any) {
-    const message = getApiErrorMessage(error)
+    const message = getApiErrorMessage(error, t)
 
     push({
       title: t('alerts.error_title'),

@@ -935,9 +935,9 @@ a:hover {
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.55);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -946,13 +946,15 @@ a:hover {
 }
 
 .modal {
-    background: var(--panel-strong);
-    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 28px;
     width: min(480px, 100%);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 32px 80px rgba(15, 23, 42, 0.18);
     display: grid;
     gap: var(--s-4);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
     /* padding: var(--s-5); */
 }
 
@@ -961,7 +963,7 @@ a:hover {
     align-items: center;
     justify-content: space-between;
     gap: var(--s-3);
-    border-bottom: 1px solid #edf0f3;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
     padding: var(--s-5) var(--s-8);
 }
 
@@ -971,8 +973,8 @@ a:hover {
 }
 
 .modal__close {
-    background: transparent;
-    border: 1px solid var(--border);
+    background: rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 999px;
     width: 36px;
     height: 36px;
@@ -989,7 +991,7 @@ a:hover {
     display: flex;
     justify-content: flex-end;
     gap: var(--s-3);
-    border-top: 1px solid #edf0f3;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
     padding: var(--s-5) var(--s-8);
 }
 

@@ -126,7 +126,7 @@ const loadSessions = async () => {
     const items = (response as { sessions?: ApiSession[] }).sessions ?? []
     sessions.value = items.map(toSessionView)
   } catch (error) {
-    const message = getApiErrorMessage(error) || t('alerts.error_title')
+    const message = getApiErrorMessage(error, t) || t('alerts.error_title')
     push({ title: t('alerts.error_title'), description: message, type: 'error' })
   }
 }
@@ -143,7 +143,7 @@ const handleTerminateSession = (sessionId: string) => {
         push({ title: 'Готово', description: message, type: 'success' })
         sessions.value = sessions.value.filter((session) => session.id !== sessionId)
       } catch (error) {
-        const message = getApiErrorMessage(error) || t('alerts.error_title')
+        const message = getApiErrorMessage(error, t) || t('alerts.error_title')
         push({ title: t('alerts.error_title'), description: message, type: 'error' })
         throw error
       }
@@ -168,7 +168,7 @@ const handleTerminateAll = () => {
         push({ title: 'Готово', description: message, type: 'success' })
         sessions.value = sessions.value.filter((session) => !session.closable)
       } catch (error) {
-        const message = getApiErrorMessage(error) || t('alerts.error_title')
+        const message = getApiErrorMessage(error, t) || t('alerts.error_title')
         push({ title: t('alerts.error_title'), description: message, type: 'error' })
         throw error
       }

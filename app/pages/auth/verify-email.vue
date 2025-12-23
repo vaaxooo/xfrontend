@@ -110,7 +110,7 @@ const handleCheckStatus = async () => {
 
     statusMessage.value = t('auth.email_verification_pending')
   } catch (error: any) {
-    const message = getApiErrorMessage(error)
+    const message = getApiErrorMessage(error, t)
     push({
       title: t('alerts.error_title'),
       description: message || t('alerts.login_error_description'),

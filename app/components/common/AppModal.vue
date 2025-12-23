@@ -95,7 +95,8 @@ onUnmounted(() => {
 
 <style scoped>
 .modal--alert {
-  border: 1px solid var(--primary);
+  border: 1px solid rgba(7, 172, 255, 0.4);
+  box-shadow: 0 26px 60px rgba(7, 172, 255, 0.12);
 }
 
 .modal__form {
