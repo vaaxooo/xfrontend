@@ -24,7 +24,7 @@
       <div class="block-action">
         <button
           type="button"
-          class="button button--secondary button-md"
+          class="button button--secondary button-sm"
           @click="handlePasswordChange"
         >
           {{ t('security.change_password') }}
@@ -107,8 +107,8 @@ const handlePasswordChange = () => {
 
       try {
         await changePassword({
-          current_password: values.current_password,
-          new_password: values.new_password,
+          current_password: values.current_password || '',
+          new_password: values.new_password || '',
         })
 
         push({

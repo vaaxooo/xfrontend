@@ -443,7 +443,7 @@ img.table-section__icon {
     cursor: pointer;
     transition: transform var(--ease), box-shadow var(--ease), background var(--ease);
     user-select: none;
-    min-height: 48px;
+    height: 40px;
     line-height: 1.2;
 }
 
@@ -953,7 +953,7 @@ a:hover {
     box-shadow: var(--shadow);
     display: grid;
     gap: var(--s-4);
-    padding: var(--s-5);
+    /* padding: var(--s-5); */
 }
 
 .modal__header {
@@ -961,6 +961,8 @@ a:hover {
     align-items: center;
     justify-content: space-between;
     gap: var(--s-3);
+    border-bottom: 1px solid #edf0f3;
+    padding: var(--s-5);
 }
 
 .modal__title {
@@ -980,12 +982,15 @@ a:hover {
 .modal__body {
     color: var(--muted);
     line-height: 1.6;
+    padding: var(--s-0) var(--s-5);
 }
 
 .modal__footer {
     display: flex;
     justify-content: flex-end;
     gap: var(--s-3);
+    border-top: 1px solid #edf0f3;
+    padding: var(--s-5);
 }
 
 .fade-enter-active,
@@ -996,6 +1001,14 @@ a:hover {
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
+}
+
+.twofa.modal__custom {
+    padding: var(--s-0) var(--s-5);
+}
+
+.modal__form {
+    padding: var(--s-0) var(--s-5);
 }
 
 @media (max-width: 575.98px) {
@@ -1020,11 +1033,14 @@ a:hover {
 
     .modal-backdrop {
         padding: var(--s-0);
+        display: block;
+        background: #fff;
     }
 
     .modal {
         width: 100%;
-        height: 100%;
         border-radius: 0;
+        border: 0;
+        box-shadow: none;
     }
 }
