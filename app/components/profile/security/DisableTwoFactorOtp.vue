@@ -1,5 +1,6 @@
 <template>
   <div class="otp-modal">
+    <p class="otp-hint">{{ t('security.disable_code_label') }}</p>
     <div class="otp-inputs">
       <input
         v-for="(_, index) in code"
@@ -21,8 +22,10 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { useModal } from '@/composables/useModal'
+import { useI18n } from '@/composables/useI18n'
 
 const { modal, updateField } = useModal()
+const { t } = useI18n()
 
 const code = ref(Array(6).fill(''))
 const inputRefs = ref<HTMLInputElement[]>([])
@@ -85,6 +88,12 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: var(--s-3);
+}
+
+.otp-hint {
+  margin: 0 0 var(--s-3);
+  color: var(--muted);
+  text-align: center;
 }
 
 .otp-input {
