@@ -191,7 +191,7 @@ const handleSubmit = async () => {
 
     await handleAuthResponse(response)
   } catch (error: any) {
-    const message = getApiErrorMessage(error)
+    const message = getApiErrorMessage(error, t)
 
     push({
       title: t('alerts.login_error_title'),
@@ -208,7 +208,7 @@ const handleGoogleLogin = async () => {
 
     await handleAuthResponse(response)
   } catch (error: any) {
-    const message = getApiErrorMessage(error)
+    const message = getApiErrorMessage(error, t)
 
     push({
       title: t('alerts.login_error_title'),

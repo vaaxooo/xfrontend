@@ -10,17 +10,40 @@ type ApiSuccessPayload = {
   message?: string
 }
 
-export const getApiErrorMessage = (error: unknown) => {
+type TranslateFn = (key: string, params?: Record<string, string | number>) => string
+
+const normalizeErrorCode = (code: string) => {
+  return code
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .toUpperCase()
+}
+
+export const getApiErrorDetails = (error: unknown) => {
   if (!error || typeof error !== 'object') return undefined
 
   const payload = error as ApiErrorPayload & { data?: ApiErrorPayload; message?: string }
 
-  return (
-    payload.error?.message ??
-    payload.data?.error?.message ??
-    payload.message ??
-    undefined
-  )
+  const code = payload.error?.code ?? payload.data?.error?.code
+  const message = payload.error?.message ?? payload.data?.error?.message ?? payload.message
+
+  return { code, message }
+}
+
+export const getApiErrorMessage = (error: unknown, t?: TranslateFn) => {
+  const details = getApiErrorDetails(error)
+  if (!details) return undefined
+
+  if (t && details.code) {
+    const normalized = normalizeErrorCode(details.code)
+    const key = `errors.codes.${normalized}`
+    const translated = t(key)
+    if (translated !== key) {
+      return translated
+    }
+  }
+
+  return details.message ?? details.code ?? undefined
 }
 
 export const getApiSuccessMessage = (payload: unknown) => {

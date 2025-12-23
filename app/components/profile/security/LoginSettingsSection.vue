@@ -120,7 +120,7 @@ const handlePasswordChange = () => {
           type: 'success',
         })
       } catch (error) {
-        const message = getApiErrorMessage(error)
+        const message = getApiErrorMessage(error, t)
 
         setModalErrors({
           form: message || t('alerts.error_title'),
