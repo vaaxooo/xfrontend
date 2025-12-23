@@ -15,7 +15,7 @@ export default defineNuxtConfig({
         runtimeConfig: {
                         public: {
                                 apiBase: 'http://localhost:8080/api/v1',
-                                googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID || ''
+                                googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID || '878691623987-95ob3g8o25t5859d2j1t0fhc62tijnvl.apps.googleusercontent.com'
                         }
         },
 
@@ -38,4 +38,11 @@ export default defineNuxtConfig({
 	plugins: [],
 
 	compatibilityDate: '2025-09-24',
+
+	vite: {
+		server: {
+			strictPort: true,
+			allowedHosts: ['localtest.me'],
+		},
+	},
 })
