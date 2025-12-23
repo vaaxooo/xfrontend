@@ -95,7 +95,9 @@ const { alerts, dismiss } = useAlerts()
 }
 
 .alert--success {
-  border-color: rgba(61, 213, 152, 0.4);
+  background-color: var(--success-bg);
+  border: 1px solid var(--success-border);
+  color: var(--success-color);
 }
 
 .alert--warning {
@@ -112,7 +114,7 @@ const { alerts, dismiss } = useAlerts()
 }
 
 .alert--success::before {
-  background: #3dd598;
+  background: #fff;
 }
 
 .alert--warning::before {
