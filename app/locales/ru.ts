@@ -50,6 +50,10 @@ export default {
     edit: 'Изменить',
     save: 'Сохранить',
     cancel: 'Отменить',
+    verify_email_title: 'Подтвердить почту',
+    verify_email_description:
+      'Мы отправим письмо с подтверждением на адрес из профиля, чтобы вы могли его подтвердить.',
+    verify_email_submit: 'Отправить письмо',
   },
   security: {
     login_settings: 'Параметры входа',
@@ -62,6 +66,8 @@ export default {
     two_factor_description: 'Дополнительный слой защиты для аккаунта через TOTP.',
     two_factor_setup_intro: 'Отсканируйте QR в приложении или введите секрет вручную и подтвердите код.',
     enable: 'Включить',
+    disable: 'Отключить',
+    two_factor_disable_confirmation: 'Вы уверены, что хотите отключить двухфакторную аутентификацию?',
     totp_placeholder: 'Код из приложения',
     scan_qr: 'Сканируйте QR в приложении-аутентификаторе',
     secret_key: 'Секретный ключ',
@@ -86,6 +92,8 @@ export default {
     password_reset: 'Пароль успешно изменён, теперь можно войти с новыми данными.',
     totp_enabled_title: '2FA включена',
     totp_enabled_body: 'Мы сохранили настройки TOTP. Включите подтверждение входа кодами.',
+    totp_disabled_title: '2FA отключена',
+    totp_disabled_body: 'Двухфакторная аутентификация для аккаунта выключена.',
     totp_required: 'Введите 6-значный код из приложения-аутентификатора, чтобы завершить вход.',
     totp_invalid: 'Неверный код. Проверьте и попробуйте ещё раз.',
     totp_invalid_attempts: 'Неверный код. Осталось попыток: {attempts}.',
@@ -97,5 +105,7 @@ export default {
     validation_email: 'Введите корректный адрес электронной почты.',
     validation_password_length: 'Пароль должен быть не короче 8 символов.',
     otp_required: 'Введите 6-значный код.',
+    email_verification_sent_title: 'Письмо отправлено',
+    email_verification_sent_body: 'Проверьте почту и перейдите по ссылке, чтобы подтвердить адрес.',
   },
 }

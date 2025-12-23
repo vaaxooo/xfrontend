@@ -9,6 +9,10 @@ export type AuthProfile = {
   display_name?: string
   avatar_url?: string
   email?: string
+  login_settings?: {
+    two_factor_enabled?: boolean
+    email_verified?: boolean
+  }
 }
 
 export type AuthSession = AuthProfile & {
@@ -51,6 +55,7 @@ export const useAuthState = () => {
       display_name: session.display_name,
       avatar_url: session.avatar_url,
       email: (session as any).email,
+      login_settings: (session as any).login_settings,
     }
   }
 

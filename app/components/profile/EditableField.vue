@@ -1,10 +1,14 @@
 <template>
-  <div class="table-section__row" @click.prevent="!editing && startEditing()">
+  <div class="table-section__row" @click.prevent="handleClick">
     <div class="table-section__label">{{ label }}</div>
     <div class="table-section__grouped-value" :class="{ 'table-section__grouped-value--editing': editing }">
       <template v-if="!editing">
         <div class="table-section__value">{{ modelValue }}</div>
-        <img src="/assets/images/icons/arrow-right.svg" class="table-section__icon">
+        <img
+          v-if="showIcon"
+          :src="icon"
+          class="table-section__icon"
+        >
       </template>
       <template v-else>
         <input v-model="draft" class="input input--inline input-sm" :placeholder="label">
@@ -18,11 +22,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from '@/composables/useI18n'
 
-const props = defineProps<{ label: string; modelValue: string }>()
-const emit = defineEmits<{ save: [value: string] }>()
+const props = withDefaults(
+  defineProps<{
+    label: string
+    modelValue: string
+    editable?: boolean
+    icon?: string
+    actionable?: boolean
+  }>(),
+  {
+    editable: true,
+    icon: '/assets/images/icons/arrow-right.svg',
+    actionable: false,
+  },
+)
+
+const emit = defineEmits<{ save: [value: string]; action: [] }>()
 
 const { t } = useI18n()
 
@@ -43,6 +61,19 @@ const startEditing = () => {
   editing.value = true
 }
 
+const handleClick = () => {
+  if (editing.value) return
+
+  if (props.editable) {
+    startEditing()
+    return
+  }
+
+  if (props.actionable) {
+    emit('action')
+  }
+}
+
 const handleSave = () => {
   emit('save', draft.value)
   editing.value = false
@@ -52,6 +83,8 @@ const handleCancel = () => {
   draft.value = props.modelValue
   editing.value = false
 }
+
+const showIcon = computed(() => props.editable || props.actionable)
 </script>
 
 <style scoped>
