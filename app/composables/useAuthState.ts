@@ -20,6 +20,11 @@ export type AuthSession = AuthProfile & {
   refresh_token: string
 }
 
+export type AuthTokens = {
+  access_token: string
+  refresh_token: string
+}
+
 export const useAuthState = () => {
   const accessTokenCookie = useCookie<string | null>('access_token', { sameSite: 'lax' })
   const refreshTokenCookie = useCookie<string | null>('refresh_token', { sameSite: 'lax' })
@@ -59,6 +64,14 @@ export const useAuthState = () => {
     }
   }
 
+  const setTokens = (tokens: AuthTokens) => {
+    accessToken.value = tokens.access_token
+    refreshToken.value = tokens.refresh_token
+
+    accessTokenCookie.value = tokens.access_token
+    refreshTokenCookie.value = tokens.refresh_token
+  }
+
   const setUserProfile = (profile: AuthProfile) => {
     user.value = profile
   }
@@ -78,6 +91,7 @@ export const useAuthState = () => {
     user,
     isAuthenticated,
     setSession,
+    setTokens,
     setUserProfile,
     clearSession,
   }
