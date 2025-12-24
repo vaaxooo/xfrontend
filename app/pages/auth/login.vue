@@ -52,11 +52,16 @@
         </span>
       </div>
     </form>
+
+    <div v-if="showTelegramWidget" class="auth-telegram-widget">
+      <p class="auth-telegram-widget__hint">{{ t('auth.telegram_widget_hint') }}</p>
+      <div ref="telegramWidgetRef" class="auth-telegram-widget__container" />
+    </div>
   </AuthCard>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref, nextTick } from 'vue'
 import AuthCard from '@/components/auth/AuthCard.vue'
 import { useAuthApi } from '@/composables/useAuthApi'
 import { useI18n } from '@/composables/useI18n'
@@ -79,7 +84,10 @@ const { push } = useAlerts()
 const router = useRouter()
 const { setSession, setUserProfile } = useAuthState()
 const { promptGoogleIdToken } = useGoogleAuth()
-const { getTelegramInitData } = useTelegramAuth()
+const { hasTelegramWebApp, getTelegramInitData, promptTelegramWidget } = useTelegramAuth()
+
+const showTelegramWidget = ref(false)
+const telegramWidgetRef = ref<HTMLDivElement | null>(null)
 
 const form = reactive({
   email: '',
@@ -222,7 +230,16 @@ const handleGoogleLogin = async () => {
 
 const handleTelegramLogin = async () => {
   try {
-    const initData = getTelegramInitData()
+    let initData: string
+
+    if (hasTelegramWebApp()) {
+      initData = getTelegramInitData()
+    } else {
+      showTelegramWidget.value = true
+      await nextTick()
+      initData = await promptTelegramWidget(telegramWidgetRef.value)
+    }
+
     const response = await telegramLogin({ init_data: initData })
 
     await handleAuthResponse(response)
@@ -257,5 +274,19 @@ const handleSocialClick = async (providerId: string) => {
   color: #ff4d4f;
   font-size: 12px;
   margin-top: 4px;
+}
+
+.auth-telegram-widget {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-telegram-widget__hint {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
 }
 </style>

@@ -19,7 +19,8 @@ export default defineNuxtConfig({
                                 googleRedirectUri:
                                         process.env.NUXT_PUBLIC_GOOGLE_REDIRECT_URI ||
                                         'http://localtest.me:3000/auth/google/callback',
-                                googleOrigin: process.env.NUXT_PUBLIC_GOOGLE_ORIGIN || 'http://localtest.me:3000'
+                                googleOrigin: process.env.NUXT_PUBLIC_GOOGLE_ORIGIN || 'http://localtest.me:3000',
+                                telegramBotUsername: process.env.NUXT_PUBLIC_TELEGRAM_BOT_USERNAME || ''
                         }
         },
 

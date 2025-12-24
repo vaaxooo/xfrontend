@@ -32,6 +32,7 @@ export default {
     otp_resend_description: 'We sent a new email to confirm your sign-in.',
     otp_confirmed: 'Code confirmed. Welcome back!',
     social_login: 'Or continue with',
+    telegram_widget_hint: 'Tap the button below to confirm sign-in with Telegram.',
     email_verification_title: 'Confirm your email',
     email_verification_description: 'Check your inbox and follow the link to continue.',
     email_verification_cta: 'I confirmed my email',
