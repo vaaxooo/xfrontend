@@ -65,6 +65,7 @@ import { useAlerts } from '@/composables/useAlerts'
 import { useRouter } from 'vue-router'
 import { useAuthState, type AuthSession } from '@/composables/useAuthState'
 import { useGoogleAuth } from '@/composables/useGoogleAuth'
+import { useTelegramAuth } from '@/composables/useTelegramAuth'
 import { getApiErrorMessage } from '@/utils/apiMessages'
 
 definePageMeta({
@@ -72,12 +73,13 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const { login, getMe, googleLogin } = useAuthApi()
+const { login, getMe, googleLogin, telegramLogin } = useAuthApi()
 const { openModal } = useModal()
 const { push } = useAlerts()
 const router = useRouter()
 const { setSession, setUserProfile } = useAuthState()
 const { promptGoogleIdToken } = useGoogleAuth()
+const { getTelegramInitData } = useTelegramAuth()
 
 const form = reactive({
   email: '',
@@ -218,9 +220,30 @@ const handleGoogleLogin = async () => {
   }
 }
 
+const handleTelegramLogin = async () => {
+  try {
+    const initData = getTelegramInitData()
+    const response = await telegramLogin({ init_data: initData })
+
+    await handleAuthResponse(response)
+  } catch (error: any) {
+    const message = getApiErrorMessage(error, t)
+
+    push({
+      title: t('alerts.login_error_title'),
+      description: t('alerts.login_error_description') || message,
+      type: 'error',
+    })
+  }
+}
+
 const handleSocialClick = async (providerId: string) => {
   if (providerId === 'google') {
     await handleGoogleLogin()
+  }
+
+  if (providerId === 'telegram') {
+    await handleTelegramLogin()
   }
 }
 </script>
