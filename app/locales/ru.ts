@@ -33,6 +33,7 @@ export default {
     otp_resend_description: 'Отправили новое письмо для подтверждения входа.',
     otp_confirmed: 'Код подтверждён. Добро пожаловать!',
     social_login: 'Или продолжите с',
+    telegram_widget_hint: 'Нажмите кнопку ниже, чтобы подтвердить вход через Telegram.',
     email_verification_title: 'Подтверждение почты',
     email_verification_description: 'Проверьте почту и перейдите по ссылке, чтобы продолжить.',
     email_verification_cta: 'Я подтвердил(а) email',

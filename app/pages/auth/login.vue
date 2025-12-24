@@ -52,11 +52,16 @@
         </span>
       </div>
     </form>
+
+    <div v-if="showTelegramWidget" class="auth-telegram-widget">
+      <p class="auth-telegram-widget__hint">{{ t('auth.telegram_widget_hint') }}</p>
+      <div ref="telegramWidgetRef" class="auth-telegram-widget__container" />
+    </div>
   </AuthCard>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref, nextTick } from 'vue'
 import AuthCard from '@/components/auth/AuthCard.vue'
 import { useAuthApi } from '@/composables/useAuthApi'
 import { useI18n } from '@/composables/useI18n'
@@ -65,6 +70,7 @@ import { useAlerts } from '@/composables/useAlerts'
 import { useRouter } from 'vue-router'
 import { useAuthState, type AuthSession } from '@/composables/useAuthState'
 import { useGoogleAuth } from '@/composables/useGoogleAuth'
+import { useTelegramAuth } from '@/composables/useTelegramAuth'
 import { getApiErrorMessage } from '@/utils/apiMessages'
 
 definePageMeta({
@@ -72,12 +78,16 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const { login, getMe, googleLogin } = useAuthApi()
+const { login, getMe, googleLogin, telegramLogin } = useAuthApi()
 const { openModal } = useModal()
 const { push } = useAlerts()
 const router = useRouter()
 const { setSession, setUserProfile } = useAuthState()
 const { promptGoogleIdToken } = useGoogleAuth()
+const { hasTelegramWebApp, getTelegramInitData, promptTelegramWidget } = useTelegramAuth()
+
+const showTelegramWidget = ref(false)
+const telegramWidgetRef = ref<HTMLDivElement | null>(null)
 
 const form = reactive({
   email: '',
@@ -218,9 +228,39 @@ const handleGoogleLogin = async () => {
   }
 }
 
+const handleTelegramLogin = async () => {
+  try {
+    let initData: string
+
+    if (hasTelegramWebApp()) {
+      initData = getTelegramInitData()
+    } else {
+      showTelegramWidget.value = true
+      await nextTick()
+      initData = await promptTelegramWidget(telegramWidgetRef.value)
+    }
+
+    const response = await telegramLogin({ init_data: initData })
+
+    await handleAuthResponse(response)
+  } catch (error: any) {
+    const message = getApiErrorMessage(error, t)
+
+    push({
+      title: t('alerts.login_error_title'),
+      description: t('alerts.login_error_description') || message,
+      type: 'error',
+    })
+  }
+}
+
 const handleSocialClick = async (providerId: string) => {
   if (providerId === 'google') {
     await handleGoogleLogin()
+  }
+
+  if (providerId === 'telegram') {
+    await handleTelegramLogin()
   }
 }
 </script>
@@ -234,5 +274,19 @@ const handleSocialClick = async (providerId: string) => {
   color: #ff4d4f;
   font-size: 12px;
   margin-top: 4px;
+}
+
+.auth-telegram-widget {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-telegram-widget__hint {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
 }
 </style>
