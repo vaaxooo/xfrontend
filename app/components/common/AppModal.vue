@@ -37,7 +37,7 @@
           <footer v-if="modal.mode === 'dialog' || modal.confirmLabel" class="modal__footer">
             <button
               type="button"
-              class="button button--secondary center button-md justify-content-center modal__button"
+              class="button button--secondary center justify-content-center modal__button"
               @click="closeModal"
             >
               {{ modal.cancelLabel || t('modal.cancel') }}
@@ -45,7 +45,7 @@
             <button
               v-if="modal.mode === 'dialog'"
               type="button"
-              class="button button--success center button-md justify-content-center modal__button"
+              class="button button--primary center justify-content-center modal__button"
               :disabled="modal.loading"
               @click="confirmModal"
             >
@@ -117,7 +117,6 @@ onUnmounted(() => {
 
 .modal__button {
   flex: 1;
-  min-height: 48px;
 }
 
 .modal__field {
@@ -136,7 +135,7 @@ onUnmounted(() => {
 }
 
 .input--error {
-  border-color: #ff4d4f;
+  border: 1px solid #ff4d4f;
 }
 
 .modal__error--general {

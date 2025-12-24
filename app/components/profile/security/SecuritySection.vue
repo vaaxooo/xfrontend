@@ -20,7 +20,7 @@
       <div class="block-action">
         <button
           type="button"
-          :class="twoFactorEnabled ? 'button button--secondary' : 'button button--success'"
+          :class="twoFactorEnabled ? 'button button--secondary' : 'button button--primary'"
           @click="twoFactorEnabled ? handleDisableTwoFactor() : handleEnableTwoFactor()"
         >
           {{ twoFactorEnabled ? t('security.disable') : t('security.enable') }}

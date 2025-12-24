@@ -9,12 +9,12 @@
       </p>
 
       <div class="auth-actions column gap-12">
-        <button type="button" class="button button--auth w-full center button-md" @click="handleCheckStatus">
+        <button type="button" class="button button--auth w-full center " @click="handleCheckStatus">
           {{ t('auth.email_verification_cta') }}
           <img src="/assets/images/icons/arrow-right-white.svg" alt="arrow" class="w-24 h-24">
         </button>
 
-        <button type="button" class="button button--secondary w-full center button-md" @click="handleResend">
+        <button type="button" class="button button--secondary w-full center " @click="handleResend">
           {{ t('auth.resend_email') }}
         </button>
       </div>

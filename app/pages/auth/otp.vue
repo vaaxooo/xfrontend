@@ -21,7 +21,7 @@
       </div>
 
       <div class="auth-actions">
-        <button type="submit" class="button button--auth w-full center button-md">
+        <button type="submit" class="button button--auth w-full center ">
           {{ t('auth.otp_submit') }}
           <img src="/assets/images/icons/arrow-right-white.svg" alt="arrow" class="w-24 h-24">
         </button>

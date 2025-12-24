@@ -31,7 +31,7 @@
       <div class="auth-actions">
         <button
           type="submit"
-          class="button button--auth w-full center button-md"
+          class="button button--auth w-full center "
           :disabled="!hasRequiredParams"
         >
           {{ t('auth.reset_submit') }}

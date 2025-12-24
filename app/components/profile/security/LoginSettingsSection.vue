@@ -24,7 +24,7 @@
       <div class="block-action">
         <button
           type="button"
-          class="button button--secondary button-sm"
+          class="button button--secondary"
           @click="handlePasswordChange"
         >
           {{ t('security.change_password') }}

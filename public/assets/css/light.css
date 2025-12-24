@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
 
 /* =========================================================
    Design tokens + Bootstrap-like breakpoints
@@ -12,19 +13,17 @@
 
 :root {
     /* Colors */
-    --bg: #f7f9fb;
+    --bg: #F3F4F5;
     --panel: rgba(255, 255, 255, 0.72);
     --panel-strong: rgba(255, 255, 255, 1);
     --border: rgba(15, 23, 42, 0.10);
     --border-strong: rgba(15, 23, 42, 0.14);
     --text: #0f172a;
     --muted: rgba(15, 23, 42, 0.65);
-
-    --primary: #07acff;
+    --primary: #0098ea;
     --danger-bg: #fee2e2;
     --danger-border: #fca5a5;
     --danger-text: #b91c1c;
-
     --success-bg: #6cbf87;
     --success-border: #65b276;
     --success-color: #fff;
@@ -80,7 +79,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Manrope', 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-family: "Nunito Sans",-apple-system,BlinkMacSystemFont,"Apple Color Emoji","Segoe UI",Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
     color: var(--text);
     font-size: var(--fs-16);
 }
@@ -108,7 +107,7 @@ img {
    ========================================================= */
 
 .app {
-    max-width: var(--container);
+    max-width: calc(var(--vh, 1vh)*100);
     margin: 0 auto;
     padding: var(--app-pad-y) var(--app-pad-x);
 }
@@ -124,14 +123,14 @@ img {
 .block {
     background: var(--panel);
     border-radius: var(--radius);
-    border: 1px solid rgba(237, 240, 243, 1);
+    /* border: 1px solid rgba(237, 240, 243, 1); */
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    /* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); */
     overflow: hidden;
     background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+    border-radius: 1rem;
+    /* box-shadow: 0 8px 24px rgba(0,0,0,0.04); */
 }
 
 .block:not(:last-child) {
@@ -190,7 +189,7 @@ img {
     background: transparent;
     border: 0;
     cursor: pointer;
-    font-family: 'Manrope', 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-family: "Nunito Sans",-apple-system,BlinkMacSystemFont,"Apple Color Emoji","Segoe UI",Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
     font-size: 15px;
     font-weight: 500;
 }
@@ -341,7 +340,7 @@ p {
 }
 
 .table-section__row:hover {
-    background: #f7f9fb;
+    background: #fafafa;
     cursor: pointer;
 }
 
@@ -452,7 +451,9 @@ img.table-section__icon {
     user-select: none;
     height: 40px;
     line-height: 1.2;
-    font-family: 'Manrope', 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-family: "Nunito Sans",-apple-system,BlinkMacSystemFont,"Apple Color Emoji","Segoe UI",Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+    border-radius: 0.75rem;
+    height: 2.75rem;
 }
 
 .button:hover {
@@ -460,21 +461,32 @@ img.table-section__icon {
 }
 
 .button--secondary {
-    background-color: #edf0f366;
-    border: 1px solid rgba(118, 152, 187, 0.18);
-    color: #202427;
+    border: 0;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    color: #2d4c5c;
+    background-color: #f3f4f5;
+}
+
+.button--secondary:hover {
+    color: #353a43;
+    background-color: #d7d7da;
 }
 
 .button--danger {
-    background-color: var(--danger-bg);
-    border: 1px solid var(--danger-border);
-    color: var(--danger-text);
+    background-color: #f35b5b;
+    border: 0;
+    color: #fff;
 }
 
 .button--success {
     background-color: var(--success-bg);
-    border: 1px solid var(--success-border);
+    border: 0;
     color: var(--success-color);
+}
+
+.button--success:hover {
+    background-color: #5bbf7a;
 }
 
 .button--primary {
@@ -588,6 +600,12 @@ img.table-section__icon {
     font-size: 14px;
     outline: none;
     transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease);
+    border: 1px solid #20333e1f;
+    background: #f3f4f5;
+    height: 3rem;
+    padding: .5rem .75rem;
+    border: 0;
+    border-radius: 1rem;
 }
 
 
@@ -869,7 +887,7 @@ a:hover {
     }
 
     .app-grid {
-        grid-template-columns: var(--sidebar) 1fr;
+        grid-template-columns: 1fr;
     }
 
     .menu {
@@ -943,7 +961,7 @@ a:hover {
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.45);
+    background: #00000052;
     backdrop-filter: blur(12px) saturate(180%);
     -webkit-backdrop-filter: blur(12px) saturate(180%);
     display: flex;
@@ -954,16 +972,19 @@ a:hover {
 }
 
 .modal {
-    background: rgb(255 255 255);
-    border-radius: 28px;
-    width: min(480px, 100%);
     border: 1px solid rgba(255, 255, 255, 0.7);
     box-shadow: 0 32px 80px rgba(15, 23, 42, 0.18);
     display: grid;
     gap: var(--s-4);
     backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
-    /* padding: var(--s-5); */
+    width: 100%;
+    min-width: 17.5rem;
+    max-width: 26rem;
+    max-height: 100%;
+    margin: 2rem auto;
+    border-radius: 1rem;
+    background-color: #ffffff;
+    box-shadow: 0 0 1.5625rem 0 #00000026;
 }
 
 .modal__header {
@@ -973,6 +994,7 @@ a:hover {
     gap: var(--s-3);
     border-bottom: 1px solid rgba(15, 23, 42, 0.08);
     padding: var(--s-5) var(--s-8);
+    padding: 1rem;
 }
 
 .modal__title {
@@ -981,22 +1003,30 @@ a:hover {
 }
 
 .modal__close {
-    background: rgba(15, 23, 42, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 999px;
     width: 36px;
     height: 36px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 20px;
+    font-weight: 600;
+    grid-area: button;
+    max-width: none !important;
+    margin-left: auto;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    color: #8399ae !important;
+    background-color: #e5e6e8 !important;
+    transition: background-color 150ms;
 }
 
 .modal__body {
     color: var(--muted);
     line-height: 1.6;
     padding: var(--s-0) var(--s-8);
+    padding: 0 1rem;
 }
 
 .modal__footer {
@@ -1005,6 +1035,7 @@ a:hover {
     gap: var(--s-3);
     border-top: 1px solid rgba(15, 23, 42, 0.08);
     padding: var(--s-5) var(--s-8);
+    padding: 1rem;
 }
 
 .fade-enter-active,
@@ -1019,10 +1050,12 @@ a:hover {
 
 .twofa.modal__custom {
     padding: var(--s-0) var(--s-8);
+    padding: 0 1rem;
 }
 
 .modal__form {
     padding: var(--s-0) var(--s-8);
+    padding: 0 1rem;
 }
 
 @media (max-width: 575.98px) {
@@ -1048,7 +1081,7 @@ a:hover {
     .modal-backdrop {
         padding: var(--s-0);
         display: block;
-        background: #fff;
+        background: #ffffff;
     }
 
     .modal {

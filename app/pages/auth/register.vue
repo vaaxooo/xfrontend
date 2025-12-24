@@ -40,7 +40,7 @@
       </div>
 
       <div class="auth-actions">
-        <button type="submit" class="button button--auth w-full center button-md">
+        <button type="submit" class="button button--auth w-full center ">
           {{ t('auth.create_account') }}
           <img src="/assets/images/icons/arrow-right-white.svg" alt="arrow" class="w-24 h-24">
         </button>
@@ -239,7 +239,7 @@ const handleSocialClick = async (providerId: string) => {
 
 <style scoped>
 .input--error {
-  border-color: #ff4d4f;
+  border: 1px solid #ff4d4f;
 }
 
 .input-error {
